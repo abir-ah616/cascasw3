@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lachrymouche.exe ♡</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;600&family=Sniglet&family=Zen+Maru+Gothic:wght@300;400;700&family=Shrikhand&display=swap" rel="stylesheet">
+    <style>
+        /* Custom Animations & Scrollbar */
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background-color: #f3f4f6;
+            background-image: 
+                radial-gradient(#d1d5db 1px, transparent 1px), 
+                radial-gradient(#d1d5db 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            overflow: hidden;
+        }
+
+        .font-cute {
+            font-family: 'Shrikhand', cursive;
+        }
+
+        /* Custom Scrollbar */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background-color: #f3e8ff;
+            border-radius: 20px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background-color: #e9d5ff;
+        }
+
+        /* Animations */
+        .fade-enter {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        .fade-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity 300ms ease-out, transform 300ms ease-out;
+        }
+        .fade-exit {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .fade-exit-active {
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 200ms ease-in, transform 200ms ease-in;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        /* Range Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none; 
+            width: 100%; 
+            background: transparent; 
+            height: 6px;
+            cursor: pointer;
+        }
+        
+        input[type=range]:focus {
+            outline: none;
+        }
+
+        /* Webkit (Chrome, Safari, Edge) */
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #fce7f3; /* Light pink track */
+            border-radius: 0;
+        }
+        
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 12px;
+            width: 12px;
+            border-radius: 50%;
+            background: #f472b6;
+            cursor: pointer;
+            margin-top: -3px; /* Centers thumb on track */
+            box-shadow: 0 0 2px rgba(0,0,0,0.1);
+        }
+
+        /* Firefox */
+        input[type=range]::-moz-range-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #fce7f3;
+        }
+
+        input[type=range]::-moz-range-thumb {
+            height: 12px;
+            width: 12px;
+            border: none;
+            border-radius: 50%;
+            background: #f472b6;
+            cursor: pointer;
+        }
+
+        /* Window Controls Hover Effects */
+        .win-btn:hover {
+            background-color: #e5e7eb;
+        }
+        .win-btn-close:hover {
+            background-color: #ef4444;
+            color: white;
+        }
+        
+        /* Draggable Title Bar */
+        #title-bar {
+            cursor: default;
+        }
+    </style>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="h-screen w-full flex items-center justify-center text-gray-600 selection:bg-pink-100 selection:text-pink-400">
+
+    <!-- Windows 11 Window Container -->
+    <!-- Added ID 'app-window' for JS targeting -->
+    <div id="app-window" class="relative w-full max-w-5xl md:w-[900px] flex flex-col bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200/60 ring-1 ring-gray-100 m-4">
+        
+        <!-- Windows 11 Title Bar -->
+        <!-- Added ID 'title-bar' -->
+        <div id="title-bar" class="h-10 bg-[#f3f3f3] border-b border-gray-200 flex items-center justify-between px-3 select-none">
+            <!-- Left: Icon + Title -->
+            <div class="flex items-center gap-3">
+                <div class="w-5 h-5 bg-pink-100 rounded flex items-center justify-center">
+                    <i data-lucide="heart" class="w-3 h-3 text-pink-400 fill-current"></i>
+                </div>
+                <span class="text-xs font-medium text-gray-600 tracking-wide font-sans">lachrymouche.exe</span>
+            </div>
+            
+            <!-- Right: Window Controls -->
+            <div class="flex items-center h-full">
+                <div class="w-11 h-8 flex items-center justify-center win-btn transition-colors cursor-default">
+                    <i data-lucide="minus" class="w-3 h-3 text-gray-500"></i>
+                </div>
+                <div class="w-11 h-8 flex items-center justify-center win-btn transition-colors cursor-default">
+                    <i data-lucide="square" class="w-3 h-3 text-gray-500"></i>
+                </div>
+                <div class="w-11 h-8 flex items-center justify-center win-btn-close transition-colors cursor-default">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Application Content -->
+        <div class="flex flex-col md:flex-row md:h-[550px] bg-white relative">
+            
+            <!-- Left Sidebar / Navigation -->
+            <div class="w-full md:w-64 bg-white/50 border-b md:border-b-0 md:border-r border-gray-100 flex flex-col items-center justify-center p-6 z-10 relative">
+                
+                <!-- Main Profile Image -->
+                <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white shadow-lg mb-4 hover:scale-105 transition-transform duration-500 cursor-pointer group">
+                    <img src="image01.jpg" alt="Profile" class="w-full h-full object-cover group-hover:opacity-90 transition-opacity">
+                </div>
+
+                <h1 class="text-4xl text-gray-400 font-cute mb-1 tracking-wide text-center">yuri!</h1>
+                <div class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-4 text-center leading-relaxed">
+                    ༘⋆𓂃 she/her <span class="text-pink-300 mx-1">|</span> 6teen<br>
+                    filipino <span class="text-pink-300 mx-1">|</span> pansexual ⪩. .⪨༝
+                </div>
+
+                <!-- Decoration -->
+                <div class="absolute bottom-10 right-6 text-pink-100 animate-float" style="animation-delay: 1s;">
+                    <i data-lucide="heart" class="w-4 h-4 fill-current"></i>
+                </div>
+
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="flex-1 relative bg-white flex flex-col min-w-0">
+                
+                <!-- Navigation Tabs (Top Right) -->
+                <div class="absolute top-0 right-0 p-6 flex gap-3 z-20">
+                    <button onclick="switchTab('home')" id="btn-home" class="nav-btn p-2 rounded-full hover:bg-pink-50 transition-colors text-pink-300 hover:text-pink-400 active">
+                        <i data-lucide="home" class="w-5 h-5"></i>
+                    </button>
+                    <button onclick="switchTab('rules')" id="btn-rules" class="nav-btn p-2 rounded-full hover:bg-pink-50 transition-colors text-gray-300 hover:text-pink-400">
+                        <i data-lucide="scroll-text" class="w-5 h-5"></i>
+                    </button>
+                    <button onclick="switchTab('lovelist')" id="btn-lovelist" class="nav-btn p-2 rounded-full hover:bg-pink-50 transition-colors text-gray-300 hover:text-pink-400">
+                        <i data-lucide="heart" class="w-5 h-5"></i>
+                    </button>
+                    <button onclick="switchTab('bl')" id="btn-bl" class="nav-btn p-2 rounded-full hover:bg-pink-50 transition-colors text-gray-300 hover:text-pink-400">
+                        <i data-lucide="book-open" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <!-- Dynamic Content -->
+                <div id="content-area" class="flex-1 p-8 md:p-12 overflow-y-auto custom-scroll flex flex-col justify-center">
+                    <!-- Content injected via JS -->
+                </div>
+
+                <!-- Music Player (Bottom) -->
+                <div class="h-20 bg-gray-50 border-t border-gray-100 flex flex-col justify-center px-6 relative overflow-hidden">
+                    <!-- Audio Element -->
+                    <audio id="bg-music" loop>
+                        <source src="NoOneNoticed.mp3" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+
+                    <div class="flex items-center justify-between w-full z-10 mb-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white border border-pink-100 rounded-full flex items-center justify-center text-pink-400 shadow-sm animate-[spin_4s_linear_infinite] play-spin paused">
+                                <i data-lucide="disc" class="w-5 h-5"></i>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-xs font-bold text-gray-600">No One Noticed</span>
+                                <span class="text-[10px] text-gray-400">The Marias</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-col items-end gap-1">
+                            <div class="flex gap-4 text-gray-400 items-center">
+                                <button id="prev-btn" class="hover:text-pink-400 transition-colors"><i data-lucide="skip-back" class="w-4 h-4"></i></button>
+                                <button id="play-btn" class="hover:text-pink-500 transition-colors text-pink-400 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm border border-pink-50">
+                                    <i data-lucide="play" class="w-4 h-4 ml-0.5"></i>
+                                </button>
+                                <button id="next-btn" class="hover:text-pink-400 transition-colors"><i data-lucide="skip-forward" class="w-4 h-4"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interactive Seek Slider -->
+                    <div class="absolute bottom-0 left-0 w-full">
+                        <input type="range" id="seek-slider" value="0" max="100">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Sidebar (Visual Links) -->
+            <div class="hidden md:flex flex-col w-32 border-l border-gray-100 bg-gray-50/30 items-center py-8 gap-6">
+                <!-- Visual Links (Buttons) -->
+                <button onclick="switchTab('rules')" class="group relative w-24 h-24 rounded-2xl overflow-hidden transition-all hover:scale-105 focus:outline-none focus:ring-4 ring-pink-100 shadow-sm hover:shadow-md">
+                    <img src="image04.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Rules">
+                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end justify-center p-2">
+                        <span class="text-[10px] text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md">Rules</span>
+                    </div>
+                </button>
+
+                <button onclick="switchTab('lovelist')" class="group relative w-24 h-24 rounded-2xl overflow-hidden transition-all hover:scale-105 focus:outline-none focus:ring-4 ring-pink-100 shadow-sm hover:shadow-md">
+                    <img src="image05.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Lovelist">
+                     <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end justify-center p-2">
+                        <span class="text-[10px] text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md">Love</span>
+                    </div>
+                </button>
+
+                <button onclick="switchTab('bl')" class="group relative w-24 h-24 rounded-2xl overflow-hidden transition-all hover:scale-105 focus:outline-none focus:ring-4 ring-pink-100 shadow-sm hover:shadow-md">
+                    <img src="image07.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="BL">
+                     <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end justify-center p-2">
+                        <span class="text-[10px] text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md">BL/Yaoi</span>
+                    </div>
+                </button>
+
+                <div class="mt-auto">
+                    <button onclick="switchTab('home')" class="group relative w-24 h-24 rounded-2xl overflow-hidden transition-all hover:scale-105 focus:outline-none focus:ring-4 ring-pink-100 shadow-sm hover:shadow-md">
+                        <img src="image06.jpg" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0" alt="Home">
+                         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end justify-center p-2">
+                            <span class="text-[10px] text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md">Home</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        const contentArea = document.getElementById('content-area');
+        const buttons = document.querySelectorAll('.nav-btn');
+        const appWindow = document.getElementById('app-window');
+        const titleBar = document.getElementById('title-bar');
+
+        // --- Window Dragging Logic ---
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
+
+        titleBar.addEventListener('mousedown', (e) => {
+            // Don't drag if clicking window controls
+            if(e.target.closest('.win-btn') || e.target.closest('.win-btn-close')) return;
+
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+
+            // Get current position properties
+            const rect = appWindow.getBoundingClientRect();
+
+            // Check if we need to switch from flex-centered to absolute positioning
+            // This happens on the first drag attempt
+            if (window.getComputedStyle(appWindow).position !== 'absolute') {
+                appWindow.style.position = 'absolute';
+                appWindow.style.left = `${rect.left}px`;
+                appWindow.style.top = `${rect.top}px`;
+                appWindow.style.margin = '0';
+            }
+
+            // Store initial position for calculation
+            initialLeft = parseFloat(appWindow.style.left) || rect.left;
+            initialTop = parseFloat(appWindow.style.top) || rect.top;
+            
+            e.preventDefault(); // Prevent text selection
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+
+            appWindow.style.left = `${initialLeft + dx}px`;
+            appWindow.style.top = `${initialTop + dy}px`;
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        // --- Audio Player Logic ---
+        const audio = document.getElementById('bg-music');
+        const playBtn = document.getElementById('play-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const discIcon = document.querySelector('.play-spin');
+        const seekSlider = document.getElementById('seek-slider');
+
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play().then(() => {
+                    playBtn.innerHTML = '<i data-lucide="pause" class="w-4 h-4 ml-0.5"></i>';
+                    lucide.createIcons();
+                    discIcon.style.animationPlayState = 'running';
+                }).catch(e => console.log("Audio error:", e));
+            } else {
+                audio.pause();
+                playBtn.innerHTML = '<i data-lucide="play" class="w-4 h-4 ml-0.5"></i>';
+                lucide.createIcons();
+                discIcon.style.animationPlayState = 'paused';
+            }
+        }
+
+        function restartTrack() {
+            audio.currentTime = 0;
+            if(audio.paused) {
+                togglePlay();
+            }
+        }
+
+        playBtn.addEventListener('click', togglePlay);
+        prevBtn.addEventListener('click', restartTrack);
+        nextBtn.addEventListener('click', restartTrack);
+
+        // Update slider as music plays
+        audio.addEventListener('timeupdate', () => {
+            if (audio.duration) {
+                const progress = (audio.currentTime / audio.duration) * 100;
+                seekSlider.value = progress;
+                
+                // Update gradient to simulate progress bar fill
+                const value = ((progress - seekSlider.min) / (seekSlider.max - seekSlider.min)) * 100;
+                seekSlider.style.background = `linear-gradient(to right, #f472b6 0%, #f472b6 ${value}%, #fce7f3 ${value}%, #fce7f3 100%)`;
+            }
+        });
+
+        // Seek functionality
+        seekSlider.addEventListener('input', () => {
+            if (audio.duration) {
+                const seekTime = (seekSlider.value / 100) * audio.duration;
+                audio.currentTime = seekTime;
+                
+                const value = ((seekSlider.value - seekSlider.min) / (seekSlider.max - seekSlider.min)) * 100;
+                seekSlider.style.background = `linear-gradient(to right, #f472b6 0%, #f472b6 ${value}%, #fce7f3 ${value}%, #fce7f3 100%)`;
+            }
+        });
+
+        // Content Templates
+        const contents = {
+            home: `
+                <div class="flex flex-col items-center text-center space-y-6 fade-enter-active">
+                    <div class="relative w-full max-w-[280px] aspect-video rounded-2xl overflow-hidden shadow-sm">
+                         <img src="image02.jpg" class="w-full h-full object-cover" alt="Sleepy">
+                         <div class="absolute inset-0 bg-gradient-to-t from-white/40 to-transparent"></div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <h2 class="text-xl font-cute text-gray-700">fandoms I'm in</h2>
+                        <div class="flex flex-wrap justify-center gap-2">
+                            <span class="px-3 py-1 bg-pink-50 text-pink-400 rounded-full text-xs hover:bg-pink-100 transition-colors cursor-default">neon genesis evangelion</span>
+                            <span class="px-3 py-1 bg-blue-50 text-blue-400 rounded-full text-xs hover:bg-blue-100 transition-colors cursor-default">haibane renmei</span>
+                            <span class="px-3 py-1 bg-purple-50 text-purple-400 rounded-full text-xs hover:bg-purple-100 transition-colors cursor-default">genshin impact</span>
+                        </div>
+                    </div>
+                    
+                    <p class="text-xs text-gray-400 italic max-w-xs leading-relaxed">
+                        "dreams are the only place where we can truly be ourselves."
+                    </p>
+                </div>
+            `,
+            rules: `
+                <div class="fade-enter-active h-full flex flex-col">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 rounded-full overflow-hidden shrink-0">
+                            <img src="image04.jpg" class="w-full h-full object-cover" alt="Rules Header Image">
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-cute text-gray-700">byf / dni</h2>
+                            <p class="text-xs text-gray-400">please read carefully...</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 overflow-y-auto custom-scroll pr-2 flex-1">
+                        <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                            <h3 class="text-sm font-bold text-blue-400 mb-2 flex items-center gap-1"><i data-lucide="heart" class="w-3 h-3 fill-current"></i> Before You Follow</h3>
+                            <ul class="text-xs text-gray-500 space-y-1 list-disc list-inside">
+                                <li>I tweet a lot about my interests.</li>
+                                <li>I am very shy but I love making new friends! Please be patient with me.</li>
+                                <li>I softblock to break mutuals.</li>
+                                <li>I'm annoying and get attached easily.</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                            <h3 class="text-sm font-bold text-pink-400 mb-2 flex items-center gap-1"><i data-lucide="x" class="w-3 h-3"></i> Do Not Interact</h3>
+                            <ul class="text-xs text-gray-500 space-y-1 list-disc list-inside">
+                                <li>Basic DNI criteria applies.</li>
+                                <li>If you're here to use me, **gtfo**.</li>
+                                <li>NSFW accounts / heavy gore.</li>
+                                <li>Endo systems.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `,
+            lovelist: `
+                <div class="fade-enter-active h-full flex flex-col">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 rounded-full overflow-hidden shrink-0">
+                            <img src="image05.jpg" class="w-full h-full object-cover" alt="Lovelist Header Image">
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-cute text-gray-700">lovelist</h2>
+                            <p class="text-xs text-gray-400">my precious things...</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 overflow-y-auto custom-scroll pr-2 pb-2 flex-1">
+                        <div class="bg-pink-50/70 p-4 rounded-2xl border border-pink-100">
+                            <h3 class="text-sm font-bold text-pink-500 mb-2 flex items-center gap-2"><i data-lucide="heart" class="w-4 h-4 fill-pink-300 text-pink-300"></i> Likes</h3>
+                            <div class="flex flex-wrap gap-2 text-xs text-gray-600">
+                                <span class="px-2 py-1 bg-white rounded-full shadow-sm border border-pink-50">🦈 Sharks</span>
+                                <span class="px-2 py-1 bg-white rounded-full shadow-sm border border-pink-50">📚 Classic Literature</span>
+                                <span class="px-2 py-1 bg-white rounded-full shadow-sm border border-pink-50">🎨 Drawing</span>
+                                <span class="px-2 py-1 bg-white rounded-full shadow-sm border border-pink-50">🧠 Psychological Anime</span>
+                                <span class="px-2 py-1 bg-white rounded-full shadow-sm border border-pink-50">🌶️ Spicy Foods</span>
+                            </div>
+                        </div>
+
+                         <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                            <h3 class="text-sm font-bold text-gray-500 mb-2 flex items-center gap-2"><i data-lucide="minus-circle" class="w-4 h-4 text-gray-400"></i> Dislikes</h3>
+                            <div class="flex flex-wrap gap-2 text-xs text-gray-600">
+                                <span class="px-2 py-1 bg-white rounded-full shadow-sm border border-gray-100">🔊 Loud Noises</span>
+                                <span class="px-2 py-1 bg-white rounded-full shadow-sm border border-gray-100">😠 Getting Yelled At</span>
+                            </div>
+                         </div>
+                        
+                        <p class="text-[10px] text-gray-400 text-center pt-2">
+                                & all my sweet mutuals ♡
+                        </p>
+                    </div>
+                </div>
+            `,
+            bl: `
+                <div class="fade-enter-active h-full flex flex-col">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 rounded-full overflow-hidden shrink-0">
+                            <img src="image07.jpg" class="w-full h-full object-cover" alt="BL/Yaoi Header Image">
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-cute text-gray-700">BL / Yaoi</h2>
+                            <p class="text-xs text-gray-400">faves I'm reading...</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 overflow-y-auto custom-scroll pr-2 flex-1">
+                        <div class="bg-purple-50/70 p-4 rounded-2xl border border-purple-100">
+                            <h3 class="text-sm font-bold text-purple-500 mb-2 flex items-center gap-1"><i data-lucide="book-open" class="w-4 h-4 text-purple-400"></i> My BL Faves</h3>
+                            <ul class="text-sm text-gray-600 space-y-1 font-medium">
+                                <li class="text-pink-400">Painter of the Night</li>
+                                <li>BJ Alex</li>
+                                <li class="text-pink-400">Roses and Champagne</li>
+                                <li>Minmotion Syndrome</li>
+                                <li class="text-pink-400">Killing Stalking</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `
+        };
+
+        function switchTab(tabName) {
+            buttons.forEach(btn => {
+                btn.classList.remove('text-pink-300');
+                btn.classList.add('text-gray-300');
+
+                if(btn.id === `btn-${tabName}`) {
+                    btn.classList.remove('text-gray-300');
+                    btn.classList.add('text-pink-300');
+                }
+            });
+
+            const oldContent = contentArea.firstElementChild;
+            if (oldContent) {
+                oldContent.classList.remove('fade-enter-active');
+                oldContent.classList.add('fade-exit-active');
+                
+                setTimeout(() => {
+                    renderContent(tabName);
+                }, 200);
+            } else {
+                renderContent(tabName);
+            }
+        }
+
+        function renderContent(tabName) {
+            contentArea.innerHTML = contents[tabName];
+            lucide.createIcons();
+            
+            requestAnimationFrame(() => {
+                const newContent = contentArea.firstElementChild;
+                if (newContent) {
+                    newContent.classList.add('fade-enter');
+                    requestAnimationFrame(() => {
+                        newContent.classList.add('fade-enter-active');
+                        newContent.classList.remove('fade-enter');
+                    });
+                }
+            });
+        }
+
+        // Initial Load
+        renderContent('home');
+
+    </script>
+</body>
+</html>
