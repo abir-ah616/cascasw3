@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>lachrymouche.exe ♡</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Fonts -->
@@ -17,7 +17,15 @@
                 radial-gradient(#d1d5db 1px, transparent 1px);
             background-size: 20px 20px;
             background-position: 0 0, 10px 10px;
-            overflow: hidden;
+            /* Mobile: Allow scroll, Desktop: Fixed */
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        @media (min-width: 768px) {
+            body {
+                overflow: hidden;
+            }
         }
 
         .font-cute {
@@ -130,20 +138,20 @@
         /* Draggable Title Bar */
         #title-bar {
             cursor: default;
+            touch-action: none; /* Prevent scroll while dragging on mobile */
         }
     </style>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="h-screen w-full flex items-center justify-center text-gray-600 selection:bg-pink-100 selection:text-pink-400">
+<body class="min-h-screen w-full flex items-center justify-center text-gray-600 selection:bg-pink-100 selection:text-pink-400 py-4 md:py-0">
 
     <!-- Windows 11 Window Container -->
-    <!-- Added ID 'app-window' for JS targeting -->
-    <div id="app-window" class="relative w-full max-w-5xl md:w-[900px] flex flex-col bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200/60 ring-1 ring-gray-100 m-4">
+    <!-- Mobile: 95% Width, Max Height 90vh. Desktop: Fixed size -->
+    <div id="app-window" class="relative w-[95%] md:w-[900px] h-[85vh] md:h-auto md:min-h-[550px] flex flex-col bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200/60 ring-1 ring-gray-100 my-auto mx-auto">
         
         <!-- Windows 11 Title Bar -->
-        <!-- Added ID 'title-bar' -->
-        <div id="title-bar" class="h-10 bg-[#f3f3f3] border-b border-gray-200 flex items-center justify-between px-3 select-none">
+        <div id="title-bar" class="h-10 bg-[#f3f3f3] border-b border-gray-200 flex items-center justify-between px-3 select-none shrink-0">
             <!-- Left: Icon + Title -->
             <div class="flex items-center gap-3">
                 <div class="w-5 h-5 bg-pink-100 rounded flex items-center justify-center">
@@ -167,34 +175,34 @@
         </div>
 
         <!-- Main Application Content -->
-        <div class="flex flex-col md:flex-row md:h-[550px] bg-white relative">
+        <div class="flex flex-col md:flex-row flex-1 bg-white relative overflow-hidden">
             
             <!-- Left Sidebar / Navigation -->
-            <div class="w-full md:w-64 bg-white/50 border-b md:border-b-0 md:border-r border-gray-100 flex flex-col items-center justify-center p-6 z-10 relative">
+            <div class="w-full md:w-64 bg-white/50 border-b md:border-b-0 md:border-r border-gray-100 flex flex-col items-center justify-center p-4 md:p-6 z-10 relative shrink-0">
                 
                 <!-- Main Profile Image -->
-                <div class="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white shadow-lg mb-4 hover:scale-105 transition-transform duration-500 cursor-pointer group">
+                <div class="w-24 h-24 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white shadow-lg mb-2 md:mb-4 hover:scale-105 transition-transform duration-500 cursor-pointer group">
                     <img src="image01.jpg" alt="Profile" class="w-full h-full object-cover group-hover:opacity-90 transition-opacity">
                 </div>
 
-                <h1 class="text-4xl text-gray-400 font-cute mb-1 tracking-wide text-center">yuri!</h1>
+                <h1 class="text-3xl md:text-4xl text-gray-400 font-cute mb-1 tracking-wide text-center">yuri!</h1>
                 <div class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-4 text-center leading-relaxed">
-                    ༘⋆𓂃 she/her <span class="text-pink-300 mx-1">|</span> 6teen<br>
-                    filipino <span class="text-pink-300 mx-1">|</span> pansexual ⪩. .⪨༝
+                    she/her <span class="text-pink-300 mx-1">|</span> teen<br>
+                    filipin <span class="text-pink-300 mx-1">|</span> pansexual
                 </div>
 
                 <!-- Decoration -->
-                <div class="absolute bottom-10 right-6 text-pink-100 animate-float" style="animation-delay: 1s;">
+                <div class="hidden md:block absolute bottom-10 right-6 text-pink-100 animate-float" style="animation-delay: 1s;">
                     <i data-lucide="heart" class="w-4 h-4 fill-current"></i>
                 </div>
 
             </div>
 
             <!-- Main Content Area -->
-            <div class="flex-1 relative bg-white flex flex-col min-w-0">
+            <div class="flex-1 relative bg-white flex flex-col min-w-0 min-h-0">
                 
                 <!-- Navigation Tabs (Top Right) -->
-                <div class="absolute top-0 right-0 p-6 flex gap-3 z-20">
+                <div class="absolute top-0 right-0 p-4 md:p-6 flex gap-2 md:gap-3 z-20">
                     <button onclick="switchTab('home')" id="btn-home" class="nav-btn p-2 rounded-full hover:bg-pink-50 transition-colors text-pink-300 hover:text-pink-400 active">
                         <i data-lucide="home" class="w-5 h-5"></i>
                     </button>
@@ -210,12 +218,12 @@
                 </div>
 
                 <!-- Dynamic Content -->
-                <div id="content-area" class="flex-1 p-8 md:p-12 overflow-y-auto custom-scroll flex flex-col justify-center">
+                <div id="content-area" class="flex-1 p-6 md:p-12 pt-16 md:pt-12 overflow-y-auto custom-scroll flex flex-col justify-center">
                     <!-- Content injected via JS -->
                 </div>
 
                 <!-- Music Player (Bottom) -->
-                <div class="h-20 bg-gray-50 border-t border-gray-100 flex flex-col justify-center px-6 relative overflow-hidden">
+                <div class="h-20 bg-gray-50 border-t border-gray-100 flex flex-col justify-center px-6 relative overflow-hidden shrink-0">
                     <!-- Audio Element -->
                     <audio id="bg-music" loop>
                         <source src="NoOneNoticed.mp3" type="audio/mpeg">
@@ -227,14 +235,14 @@
                             <div class="w-10 h-10 bg-white border border-pink-100 rounded-full flex items-center justify-center text-pink-400 shadow-sm animate-[spin_4s_linear_infinite] play-spin paused">
                                 <i data-lucide="disc" class="w-5 h-5"></i>
                             </div>
-                            <div class="flex flex-col">
-                                <span class="text-xs font-bold text-gray-600">No One Noticed</span>
-                                <span class="text-[10px] text-gray-400">The Marias</span>
+                            <div class="flex flex-col max-w-[100px] md:max-w-none overflow-hidden">
+                                <span class="text-xs font-bold text-gray-600 truncate">No One Noticed</span>
+                                <span class="text-[10px] text-gray-400 truncate">The Marias</span>
                             </div>
                         </div>
                         
                         <div class="flex flex-col items-end gap-1">
-                            <div class="flex gap-4 text-gray-400 items-center">
+                            <div class="flex gap-3 md:gap-4 text-gray-400 items-center">
                                 <button id="prev-btn" class="hover:text-pink-400 transition-colors"><i data-lucide="skip-back" class="w-4 h-4"></i></button>
                                 <button id="play-btn" class="hover:text-pink-500 transition-colors text-pink-400 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm border border-pink-50">
                                     <i data-lucide="play" class="w-4 h-4 ml-0.5"></i>
@@ -251,8 +259,8 @@
                 </div>
             </div>
 
-            <!-- Right Sidebar (Visual Links) -->
-            <div class="hidden md:flex flex-col w-32 border-l border-gray-100 bg-gray-50/30 items-center py-8 gap-6">
+            <!-- Right Sidebar (Visual Links) - Hidden on Mobile -->
+            <div class="hidden md:flex flex-col w-32 border-l border-gray-100 bg-gray-50/30 items-center py-8 gap-6 shrink-0">
                 <!-- Visual Links (Buttons) -->
                 <button onclick="switchTab('rules')" class="group relative w-24 h-24 rounded-2xl overflow-hidden transition-all hover:scale-105 focus:outline-none focus:ring-4 ring-pink-100 shadow-sm hover:shadow-md">
                     <img src="image04.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Rules">
@@ -271,7 +279,7 @@
                 <button onclick="switchTab('bl')" class="group relative w-24 h-24 rounded-2xl overflow-hidden transition-all hover:scale-105 focus:outline-none focus:ring-4 ring-pink-100 shadow-sm hover:shadow-md">
                     <img src="image07.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="BL">
                      <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end justify-center p-2">
-                        <span class="text-[10px] text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md">BL/Yaoi</span>
+                        <span class="text-[10px] text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md">Reading</span>
                     </div>
                 </button>
 
@@ -296,50 +304,78 @@
         const appWindow = document.getElementById('app-window');
         const titleBar = document.getElementById('title-bar');
 
-        // --- Window Dragging Logic ---
+        // --- Window Dragging Logic (Mouse & Touch) ---
         let isDragging = false;
         let startX, startY, initialLeft, initialTop;
 
-        titleBar.addEventListener('mousedown', (e) => {
+        function startDrag(e) {
             // Don't drag if clicking window controls
             if(e.target.closest('.win-btn') || e.target.closest('.win-btn-close')) return;
 
             isDragging = true;
-            startX = e.clientX;
-            startY = e.clientY;
+            
+            // Handle both mouse and touch events
+            if (e.type === 'touchstart') {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            } else {
+                startX = e.clientX;
+                startY = e.clientY;
+            }
 
-            // Get current position properties
             const rect = appWindow.getBoundingClientRect();
 
-            // Check if we need to switch from flex-centered to absolute positioning
-            // This happens on the first drag attempt
+            // Switch to absolute on first drag
             if (window.getComputedStyle(appWindow).position !== 'absolute') {
                 appWindow.style.position = 'absolute';
                 appWindow.style.left = `${rect.left}px`;
                 appWindow.style.top = `${rect.top}px`;
                 appWindow.style.margin = '0';
+                appWindow.style.transform = 'none'; // Clear any flexbox centering transforms
             }
 
-            // Store initial position for calculation
             initialLeft = parseFloat(appWindow.style.left) || rect.left;
             initialTop = parseFloat(appWindow.style.top) || rect.top;
             
-            e.preventDefault(); // Prevent text selection
-        });
+            if(e.type === 'mousedown') e.preventDefault(); // Prevent text selection on mouse
+        }
 
-        document.addEventListener('mousemove', (e) => {
+        function doDrag(e) {
             if (!isDragging) return;
 
-            const dx = e.clientX - startX;
-            const dy = e.clientY - startY;
+            let clientX, clientY;
+
+            if (e.type === 'touchmove') {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+
+            const dx = clientX - startX;
+            const dy = clientY - startY;
 
             appWindow.style.left = `${initialLeft + dx}px`;
             appWindow.style.top = `${initialTop + dy}px`;
-        });
+            
+            if(e.type === 'touchmove') e.preventDefault(); // Prevent scrolling while dragging
+        }
 
-        document.addEventListener('mouseup', () => {
+        function endDrag() {
             isDragging = false;
-        });
+        }
+
+        // Mouse Events
+        titleBar.addEventListener('mousedown', startDrag);
+        document.addEventListener('mousemove', doDrag);
+        document.addEventListener('mouseup', endDrag);
+
+        // Touch Events
+        titleBar.addEventListener('touchstart', startDrag, { passive: false });
+        document.addEventListener('touchmove', doDrag, { passive: false });
+        document.addEventListener('touchend', endDrag);
+
 
         // --- Audio Player Logic ---
         const audio = document.getElementById('bg-music');
@@ -375,30 +411,25 @@
         prevBtn.addEventListener('click', restartTrack);
         nextBtn.addEventListener('click', restartTrack);
 
-        // Update slider as music plays
         audio.addEventListener('timeupdate', () => {
             if (audio.duration) {
                 const progress = (audio.currentTime / audio.duration) * 100;
                 seekSlider.value = progress;
-                
-                // Update gradient to simulate progress bar fill
                 const value = ((progress - seekSlider.min) / (seekSlider.max - seekSlider.min)) * 100;
                 seekSlider.style.background = `linear-gradient(to right, #f472b6 0%, #f472b6 ${value}%, #fce7f3 ${value}%, #fce7f3 100%)`;
             }
         });
 
-        // Seek functionality
         seekSlider.addEventListener('input', () => {
             if (audio.duration) {
                 const seekTime = (seekSlider.value / 100) * audio.duration;
                 audio.currentTime = seekTime;
-                
                 const value = ((seekSlider.value - seekSlider.min) / (seekSlider.max - seekSlider.min)) * 100;
                 seekSlider.style.background = `linear-gradient(to right, #f472b6 0%, #f472b6 ${value}%, #fce7f3 ${value}%, #fce7f3 100%)`;
             }
         });
 
-        // Content Templates
+        // Content Templates (Same as before)
         const contents = {
             home: `
                 <div class="flex flex-col items-center text-center space-y-6 fade-enter-active">
