@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>lachrymouche's introduction ♡</title>
+    <title>lachrymouche.exe ♡</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;600&family=Sniglet&family=Zen+Maru+Gothic:wght@300;400;700&family=Shrikhand&display=swap" rel="stylesheet">
@@ -117,6 +117,7 @@
 
         /* Window State Classes */
         #app-window {
+            /* Default transition for smooth maximize/minimize */
             transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
                         height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
                         transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
@@ -125,6 +126,11 @@
                         top 0.4s cubic-bezier(0.4, 0, 0.2, 1),
                         border-radius 0.4s;
             transform-origin: bottom center;
+        }
+
+        /* Class added via JS during drag to prevent lag */
+        #app-window.dragging {
+            transition: none !important;
         }
 
         .maximized {
@@ -198,8 +204,8 @@
 
                 <h1 class="text-3xl md:text-4xl text-gray-400 font-cute mb-1 tracking-wide text-center">yuri!</h1>
                 <div class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-4 text-center leading-relaxed">
-                    ༘⋆𓂃she/her <span class="text-pink-300 mx-1">|</span> 6teen<br>
-                    filipino <span class="text-pink-300 mx-1">|</span> pansexual ⪩. .⪨༝
+                    she/her <span class="text-pink-300 mx-1">|</span> teen<br>
+                    filipin <span class="text-pink-300 mx-1">|</span> pansexual
                 </div>
 
                 <!-- Decoration -->
@@ -229,6 +235,7 @@
                 </div>
 
                 <!-- Dynamic Content -->
+                <!-- Added padding-top to push content down slightly more to avoid overlap on mobile -->
                 <div id="content-area" class="flex-1 p-6 md:p-12 pt-16 md:pt-12 overflow-y-auto custom-scroll flex flex-col justify-center">
                     <!-- Content injected via JS -->
                 </div>
@@ -270,9 +277,9 @@
                 </div>
             </div>
 
-            <!-- Right Sidebar (Visual Links) - Adjusted for Mobile Visibility -->
-            <!-- CHANGED: flex-row for mobile, flex-col for desktop. Removed 'hidden' -->
-            <div class="flex md:flex-col flex-row w-full md:w-32 h-auto md:h-auto border-t md:border-t-0 md:border-l border-gray-100 bg-gray-50/30 items-center justify-center md:justify-start py-4 md:py-8 gap-4 md:gap-6 shrink-0 overflow-x-auto md:overflow-visible">
+            <!-- Right Sidebar (Visual Links) -->
+            <!-- Increased bottom padding (pb-8) for mobile to clear device nav bar -->
+            <div class="flex md:flex-col flex-row w-full md:w-32 h-auto md:h-auto border-t md:border-t-0 md:border-l border-gray-100 bg-gray-50/30 items-center justify-center md:justify-start pt-4 pb-8 md:py-8 gap-4 md:gap-6 shrink-0 overflow-x-auto md:overflow-visible">
                 <!-- Visual Links (Buttons) -->
                 <button onclick="switchTab('rules')" class="group relative w-16 h-16 md:w-24 md:h-24 rounded-2xl overflow-hidden transition-all hover:scale-105 focus:outline-none focus:ring-4 ring-pink-100 shadow-sm hover:shadow-md shrink-0">
                     <img src="image04.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Rules">
@@ -291,7 +298,7 @@
                 <button onclick="switchTab('bl')" class="group relative w-16 h-16 md:w-24 md:h-24 rounded-2xl overflow-hidden transition-all hover:scale-105 focus:outline-none focus:ring-4 ring-pink-100 shadow-sm hover:shadow-md shrink-0">
                     <img src="image07.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="BL">
                      <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end justify-center p-1 md:p-2">
-                        <span class="text-[8px] md:text-[10px] text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md">BL/Yaoi</span>
+                        <span class="text-[8px] md:text-[10px] text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md">Reading</span>
                     </div>
                 </button>
 
@@ -323,7 +330,6 @@
 
         btnMinimize.addEventListener('click', () => {
             appWindow.classList.add('minimized');
-            
             // Show dock icon
             dockIcon.classList.remove('translate-y-24', 'opacity-0');
         });
@@ -354,6 +360,8 @@
             if(isMaximized || e.target.closest('.win-btn') || e.target.closest('.win-btn-close')) return;
 
             isDragging = true;
+            // DISABLE TRANSITION DURING DRAG to prevent lag/throwing effect
+            appWindow.classList.add('dragging');
             
             if (e.type === 'touchstart') {
                 startX = e.touches[0].clientX;
@@ -403,6 +411,8 @@
 
         function endDrag() {
             isDragging = false;
+            // RE-ENABLE TRANSITIONS after drag ends
+            appWindow.classList.remove('dragging');
         }
 
         titleBar.addEventListener('mousedown', startDrag);
@@ -468,8 +478,9 @@
 
         // Content Templates
         const contents = {
+            // ADDED mt-10 specifically for home on mobile to avoid overlap with absolute buttons
             home: `
-                <div class="flex flex-col items-center text-center space-y-6 fade-enter-active">
+                <div class="flex flex-col items-center text-center space-y-6 fade-enter-active mt-10 md:mt-0">
                     <div class="relative w-full max-w-[280px] aspect-video rounded-2xl overflow-hidden shadow-sm">
                          <img src="image02.jpg" class="w-full h-full object-cover" alt="Sleepy">
                          <div class="absolute inset-0 bg-gradient-to-t from-white/40 to-transparent"></div>
@@ -490,7 +501,7 @@
                 </div>
             `,
             rules: `
-                <div class="fade-enter-active h-full flex flex-col">
+                <div class="fade-enter-active h-full flex flex-col mt-4 md:mt-0">
                     <div class="flex items-center gap-3 mb-6">
                         <div class="w-12 h-12 rounded-full overflow-hidden shrink-0">
                             <img src="image04.jpg" class="w-full h-full object-cover" alt="Rules Header Image">
@@ -525,7 +536,7 @@
                 </div>
             `,
             lovelist: `
-                <div class="fade-enter-active h-full flex flex-col">
+                <div class="fade-enter-active h-full flex flex-col mt-4 md:mt-0">
                     <div class="flex items-center gap-3 mb-6">
                         <div class="w-12 h-12 rounded-full overflow-hidden shrink-0">
                             <img src="image05.jpg" class="w-full h-full object-cover" alt="Lovelist Header Image">
@@ -563,7 +574,7 @@
                 </div>
             `,
             bl: `
-                <div class="fade-enter-active h-full flex flex-col">
+                <div class="fade-enter-active h-full flex flex-col mt-4 md:mt-0">
                     <div class="flex items-center gap-3 mb-6">
                         <div class="w-12 h-12 rounded-full overflow-hidden shrink-0">
                             <img src="image07.jpg" class="w-full h-full object-cover" alt="BL/Yaoi Header Image">
