@@ -17,7 +17,7 @@
                 radial-gradient(#d1d5db 1px, transparent 1px);
             background-size: 20px 20px;
             background-position: 0 0, 10px 10px;
-            overflow: hidden; /* Hide overflow to handle absolute positioning better */
+            overflow: hidden;
         }
 
         .font-cute {
@@ -117,15 +117,11 @@
 
         /* Window State Classes */
         #app-window {
-            /* Default transition for smooth maximize/minimize */
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
-                        height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                        transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                        opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                        left 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                        top 0.4s cubic-bezier(0.4, 0, 0.2, 1),
-                        border-radius 0.4s;
+            /* Consolidated transition property for reliability */
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             transform-origin: bottom center;
+            /* Ensure positioning context */
+            z-index: 10;
         }
 
         /* Class added via JS during drag to prevent lag */
@@ -133,19 +129,22 @@
             transition: none !important;
         }
 
+        /* Maximized state uses fixed positioning to solve mobile clipping */
         .maximized {
-            width: 100% !important;
-            height: 100% !important;
+            position: fixed !important;
             top: 0 !important;
             left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
             border-radius: 0 !important;
             margin: 0 !important;
-            max-width: none !important;
+            transform: none !important;
+            z-index: 50 !important;
         }
 
         .minimized {
-            transform: scale(0.5) translateY(100vh);
-            opacity: 0;
+            transform: scale(0.5) translateY(120vh) !important;
+            opacity: 0 !important;
             pointer-events: none;
         }
     </style>
@@ -155,7 +154,7 @@
 <body class="h-screen w-full flex items-center justify-center text-gray-600 selection:bg-pink-100 selection:text-pink-400 overflow-hidden relative bg-[#f3f4f6]">
 
     <!-- Minimized Dock Icon -->
-    <div id="dock-icon" onclick="restoreWindow()" class="fixed bottom-6 left-1/2 -translate-x-1/2 translate-y-24 opacity-0 transition-all duration-500 z-50 cursor-pointer hover:scale-110 group">
+    <div id="dock-icon" onclick="restoreWindow()" class="fixed bottom-6 left-1/2 -translate-x-1/2 translate-y-40 opacity-0 transition-all duration-500 z-[60] cursor-pointer hover:scale-110 group">
         <div class="w-14 h-14 bg-white/90 backdrop-blur-md rounded-2xl shadow-[0_10px_40px_-10px_rgba(244,114,182,0.5)] border border-pink-200 flex items-center justify-center ring-4 ring-pink-50 group-hover:ring-pink-100 transition-all">
             <i data-lucide="heart" class="w-6 h-6 text-pink-400 fill-current animate-[pulse_2s_infinite]"></i>
         </div>
@@ -165,7 +164,7 @@
     </div>
 
     <!-- Windows 11 Window Container -->
-    <div id="app-window" class="relative w-[95%] md:w-[900px] h-[85vh] md:h-auto md:min-h-[550px] flex flex-col bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200/60 ring-1 ring-gray-100 my-auto mx-auto z-10">
+    <div id="app-window" class="relative w-[95%] md:w-[900px] h-[85vh] md:h-auto md:min-h-[550px] flex flex-col bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200/60 ring-1 ring-gray-100 my-auto mx-auto">
         
         <!-- Windows 11 Title Bar -->
         <div id="title-bar" class="h-10 bg-[#f3f3f3] border-b border-gray-200 flex items-center justify-between px-3 select-none shrink-0">
@@ -235,8 +234,8 @@
                 </div>
 
                 <!-- Dynamic Content -->
-                <!-- Added padding-top to push content down slightly more to avoid overlap on mobile -->
-                <div id="content-area" class="flex-1 p-6 md:p-12 pt-16 md:pt-12 overflow-y-auto custom-scroll flex flex-col justify-center">
+                <!-- CHANGED: justify-start for mobile, center for desktop. Increased pt (padding-top) to 24 (96px) -->
+                <div id="content-area" class="flex-1 p-6 md:p-12 pt-24 md:pt-12 overflow-y-auto custom-scroll flex flex-col justify-start md:justify-center">
                     <!-- Content injected via JS -->
                 </div>
 
@@ -278,7 +277,7 @@
             </div>
 
             <!-- Right Sidebar (Visual Links) -->
-            <!-- Increased bottom padding (pb-8) for mobile to clear device nav bar -->
+            <!-- Kept padded bottom to ensure visibility on mobile -->
             <div class="flex md:flex-col flex-row w-full md:w-32 h-auto md:h-auto border-t md:border-t-0 md:border-l border-gray-100 bg-gray-50/30 items-center justify-center md:justify-start pt-4 pb-8 md:py-8 gap-4 md:gap-6 shrink-0 overflow-x-auto md:overflow-visible">
                 <!-- Visual Links (Buttons) -->
                 <button onclick="switchTab('rules')" class="group relative w-16 h-16 md:w-24 md:h-24 rounded-2xl overflow-hidden transition-all hover:scale-105 focus:outline-none focus:ring-4 ring-pink-100 shadow-sm hover:shadow-md shrink-0">
@@ -329,22 +328,28 @@
         let isMaximized = false;
 
         btnMinimize.addEventListener('click', () => {
+            // Safety: Ensure dragging class is removed so transition can run
+            appWindow.classList.remove('dragging');
+            
+            // Force reflow to ensure browser registers start position for animation
+            void appWindow.offsetWidth;
+            
             appWindow.classList.add('minimized');
-            // Show dock icon
-            dockIcon.classList.remove('translate-y-24', 'opacity-0');
+            dockIcon.classList.remove('translate-y-40', 'opacity-0');
         });
 
         window.restoreWindow = () => {
             appWindow.classList.remove('minimized');
-            // Hide dock icon
-            dockIcon.classList.add('translate-y-24', 'opacity-0');
+            dockIcon.classList.add('translate-y-40', 'opacity-0');
         };
 
         btnMaximize.addEventListener('click', () => {
             isMaximized = !isMaximized;
+            // Safety: Remove dragging class
+            appWindow.classList.remove('dragging');
+            
             if (isMaximized) {
                 appWindow.classList.add('maximized');
-                // Optional: Store previous position logic could go here
             } else {
                 appWindow.classList.remove('maximized');
             }
@@ -373,6 +378,7 @@
 
             const rect = appWindow.getBoundingClientRect();
 
+            // Switch to absolute positioning if not already
             if (window.getComputedStyle(appWindow).position !== 'absolute') {
                 appWindow.style.position = 'absolute';
                 appWindow.style.left = `${rect.left}px`;
@@ -478,9 +484,8 @@
 
         // Content Templates
         const contents = {
-            // ADDED mt-10 specifically for home on mobile to avoid overlap with absolute buttons
             home: `
-                <div class="flex flex-col items-center text-center space-y-6 fade-enter-active mt-10 md:mt-0">
+                <div class="flex flex-col items-center text-center space-y-6 fade-enter-active">
                     <div class="relative w-full max-w-[280px] aspect-video rounded-2xl overflow-hidden shadow-sm">
                          <img src="image02.jpg" class="w-full h-full object-cover" alt="Sleepy">
                          <div class="absolute inset-0 bg-gradient-to-t from-white/40 to-transparent"></div>
