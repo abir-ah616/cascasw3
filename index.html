@@ -1,654 +1,2995 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>lachrymouche's introduction ♡</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;600&family=Sniglet&family=Zen+Maru+Gothic:wght@300;400;700&family=Shrikhand&display=swap" rel="stylesheet">
-    <style>
-        /* Custom Animations & Scrollbar */
-        body {
-            font-family: 'Zen Maru Gothic', sans-serif;
-            background-color: #f3f4f6;
-            background-image: 
-                radial-gradient(#d1d5db 1px, transparent 1px), 
-                radial-gradient(#d1d5db 1px, transparent 1px);
-            background-size: 20px 20px;
-            background-position: 0 0, 10px 10px;
-            overflow: hidden;
-        }
-
-        .font-cute {
-            font-family: 'Shrikhand', cursive;
-        }
-
-        /* Custom Scrollbar */
-        .custom-scroll::-webkit-scrollbar {
-            width: 6px;
-        }
-        .custom-scroll::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .custom-scroll::-webkit-scrollbar-thumb {
-            background-color: #f3e8ff;
-            border-radius: 20px;
-        }
-        .custom-scroll::-webkit-scrollbar-thumb:hover {
-            background-color: #e9d5ff;
-        }
-
-        /* Animations */
-        .fade-enter {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        .fade-enter-active {
-            opacity: 1;
-            transform: translateY(0);
-            transition: opacity 300ms ease-out, transform 300ms ease-out;
-        }
-        .fade-exit {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .fade-exit-active {
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 200ms ease-in, transform 200ms ease-in;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
-            100% { transform: translateY(0px); }
-        }
-        .animate-float {
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        /* Range Slider Styling */
-        input[type=range] {
-            -webkit-appearance: none; 
-            width: 100%; 
-            background: transparent; 
-            height: 6px;
-            cursor: pointer;
-        }
-        
-        input[type=range]:focus {
-            outline: none;
-        }
-
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 6px;
-            cursor: pointer;
-            background: #fce7f3;
-            border-radius: 0;
-        }
-        
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 12px;
-            width: 12px;
-            border-radius: 50%;
-            background: #f472b6;
-            cursor: pointer;
-            margin-top: -3px;
-            box-shadow: 0 0 2px rgba(0,0,0,0.1);
-        }
-
-        /* Window Controls Hover Effects */
-        .win-btn:hover {
-            background-color: #e5e7eb;
-        }
-        .win-btn-close:hover {
-            background-color: #ef4444;
-            color: white;
-        }
-        
-        /* Draggable Title Bar */
-        #title-bar {
-            cursor: default;
-            touch-action: none;
-        }
-
-        /* Window State Classes */
-        #app-window {
-            /* Consolidated transition property for reliability */
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-origin: bottom center;
-            /* Ensure positioning context */
-            z-index: 10;
-        }
-
-        /* Class added via JS during drag to prevent lag */
-        #app-window.dragging {
-            transition: none !important;
-        }
-
-        /* Maximized state uses fixed positioning to solve mobile clipping */
-        .maximized {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: 100% !important;
-            border-radius: 0 !important;
-            margin: 0 !important;
-            transform: none !important;
-            z-index: 50 !important;
-        }
-
-        .minimized {
-            transform: scale(0.5) translateY(120vh) !important;
-            opacity: 0 !important;
-            pointer-events: none;
-        }
-    </style>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-</head>
-<body class="h-screen w-full flex items-center justify-center text-gray-600 selection:bg-pink-100 selection:text-pink-400 overflow-hidden relative bg-[#f3f4f6]">
-
-    <!-- Minimized Dock Icon -->
-    <div id="dock-icon" onclick="restoreWindow()" class="fixed bottom-6 left-1/2 -translate-x-1/2 translate-y-40 opacity-0 transition-all duration-500 z-[60] cursor-pointer hover:scale-110 group">
-        <div class="w-14 h-14 bg-white/90 backdrop-blur-md rounded-2xl shadow-[0_10px_40px_-10px_rgba(244,114,182,0.5)] border border-pink-200 flex items-center justify-center ring-4 ring-pink-50 group-hover:ring-pink-100 transition-all">
-            <i data-lucide="heart" class="w-6 h-6 text-pink-400 fill-current animate-[pulse_2s_infinite]"></i>
-        </div>
-        <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-            lachrymouche.exe
-        </div>
-    </div>
-
-    <!-- Windows 11 Window Container -->
-    <div id="app-window" class="relative w-[95%] md:w-[900px] h-[85vh] md:h-auto md:min-h-[550px] flex flex-col bg-white rounded-xl shadow-2xl overflow-hidden border border-gray-200/60 ring-1 ring-gray-100 my-auto mx-auto">
-        
-        <!-- Windows 11 Title Bar -->
-        <div id="title-bar" class="h-10 bg-[#f3f3f3] border-b border-gray-200 flex items-center justify-between px-3 select-none shrink-0">
-            <!-- Left: Icon + Title -->
-            <div class="flex items-center gap-3">
-                <div class="w-5 h-5 bg-pink-100 rounded flex items-center justify-center">
-                    <i data-lucide="heart" class="w-3 h-3 text-pink-400 fill-current"></i>
-                </div>
-                <span class="text-xs font-medium text-gray-600 tracking-wide font-sans">lachrymouche.exe</span>
-            </div>
-            
-            <!-- Right: Window Controls -->
-            <div class="flex items-center h-full">
-                <div id="btn-minimize" class="w-11 h-8 flex items-center justify-center win-btn transition-colors cursor-default">
-                    <i data-lucide="minus" class="w-3 h-3 text-gray-500"></i>
-                </div>
-                <div id="btn-maximize" class="w-11 h-8 flex items-center justify-center win-btn transition-colors cursor-default">
-                    <i data-lucide="square" class="w-3 h-3 text-gray-500"></i>
-                </div>
-                <div onclick="location.reload()" class="w-11 h-8 flex items-center justify-center win-btn-close transition-colors cursor-default">
-                    <i data-lucide="x" class="w-4 h-4"></i>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Application Content -->
-        <div class="flex flex-col md:flex-row flex-1 bg-white relative overflow-hidden">
-            
-            <!-- Left Sidebar / Navigation -->
-            <div class="w-full md:w-64 bg-white/50 border-b md:border-b-0 md:border-r border-gray-100 flex flex-col items-center justify-center p-4 md:p-6 z-10 relative shrink-0">
-                
-                <!-- Main Profile Image -->
-                <div class="w-24 h-24 md:w-40 md:h-40 rounded-full overflow-hidden border-4 border-white shadow-lg mb-2 md:mb-4 hover:scale-105 transition-transform duration-500 cursor-pointer group">
-                    <img src="image01.jpg" alt="Profile" class="w-full h-full object-cover group-hover:opacity-90 transition-opacity">
-                </div>
-
-                <h1 class="text-3xl md:text-4xl text-gray-400 font-cute mb-1 tracking-wide text-center">yuri!</h1>
-                <div class="text-[10px] uppercase tracking-[0.2em] text-gray-400 mb-4 text-center leading-relaxed">
-                    ༘⋆𓂃she/her <span class="text-pink-300 mx-1">|</span> 6teen<br>
-                    filipino <span class="text-pink-300 mx-1">|</span> pansexual ⪩. .⪨༝
-                </div>
-
-                <!-- Decoration -->
-                <div class="hidden md:block absolute bottom-10 right-6 text-pink-100 animate-float" style="animation-delay: 1s;">
-                    <i data-lucide="heart" class="w-4 h-4 fill-current"></i>
-                </div>
-
-            </div>
-
-            <!-- Main Content Area -->
-            <div class="flex-1 relative bg-white flex flex-col min-w-0 min-h-0">
-                
-                <!-- Navigation Tabs (Top Right) -->
-                <div class="absolute top-0 right-0 p-4 md:p-6 flex gap-2 md:gap-3 z-20">
-                    <button onclick="switchTab('home')" id="btn-home" class="nav-btn p-2 rounded-full hover:bg-pink-50 transition-colors text-pink-300 hover:text-pink-400 active">
-                        <i data-lucide="home" class="w-5 h-5"></i>
-                    </button>
-                    <button onclick="switchTab('rules')" id="btn-rules" class="nav-btn p-2 rounded-full hover:bg-pink-50 transition-colors text-gray-300 hover:text-pink-400">
-                        <i data-lucide="scroll-text" class="w-5 h-5"></i>
-                    </button>
-                    <button onclick="switchTab('lovelist')" id="btn-lovelist" class="nav-btn p-2 rounded-full hover:bg-pink-50 transition-colors text-gray-300 hover:text-pink-400">
-                        <i data-lucide="heart" class="w-5 h-5"></i>
-                    </button>
-                    <button onclick="switchTab('bl')" id="btn-bl" class="nav-btn p-2 rounded-full hover:bg-pink-50 transition-colors text-gray-300 hover:text-pink-400">
-                        <i data-lucide="book-open" class="w-5 h-5"></i>
-                    </button>
-                </div>
-
-                <!-- Dynamic Content -->
-                <!-- CHANGED: justify-start for mobile, center for desktop. Increased pt (padding-top) to 24 (96px) -->
-                <div id="content-area" class="flex-1 p-6 md:p-12 pt-24 md:pt-12 overflow-y-auto custom-scroll flex flex-col justify-start md:justify-center">
-                    <!-- Content injected via JS -->
-                </div>
-
-                <!-- Music Player (Bottom) -->
-                <div class="h-20 bg-gray-50 border-t border-gray-100 flex flex-col justify-center px-6 relative overflow-hidden shrink-0">
-                    <!-- Audio Element -->
-                    <audio id="bg-music" loop>
-                        <source src="NoOneNoticed.mp3" type="audio/mpeg">
-                        Your browser does not support the audio element.
-                    </audio>
-
-                    <div class="flex items-center justify-between w-full z-10 mb-2">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 bg-white border border-pink-100 rounded-full flex items-center justify-center text-pink-400 shadow-sm animate-[spin_4s_linear_infinite] play-spin paused">
-                                <i data-lucide="disc" class="w-5 h-5"></i>
-                            </div>
-                            <div class="flex flex-col max-w-[100px] md:max-w-none overflow-hidden">
-                                <span class="text-xs font-bold text-gray-600 truncate">No One Noticed</span>
-                                <span class="text-[10px] text-gray-400 truncate">The Marias</span>
-                            </div>
-                        </div>
-                        
-                        <div class="flex flex-col items-end gap-1">
-                            <div class="flex gap-3 md:gap-4 text-gray-400 items-center">
-                                <button id="prev-btn" class="hover:text-pink-400 transition-colors"><i data-lucide="skip-back" class="w-4 h-4"></i></button>
-                                <button id="play-btn" class="hover:text-pink-500 transition-colors text-pink-400 w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm border border-pink-50">
-                                    <i data-lucide="play" class="w-4 h-4 ml-0.5"></i>
-                                </button>
-                                <button id="next-btn" class="hover:text-pink-400 transition-colors"><i data-lucide="skip-forward" class="w-4 h-4"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Interactive Seek Slider -->
-                    <div class="absolute bottom-0 left-0 w-full">
-                        <input type="range" id="seek-slider" value="0" max="100">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Right Sidebar (Visual Links) -->
-            <!-- Kept padded bottom to ensure visibility on mobile -->
-            <div class="flex md:flex-col flex-row w-full md:w-32 h-auto md:h-auto border-t md:border-t-0 md:border-l border-gray-100 bg-gray-50/30 items-center justify-center md:justify-start pt-4 pb-8 md:py-8 gap-4 md:gap-6 shrink-0 overflow-x-auto md:overflow-visible">
-                <!-- Visual Links (Buttons) -->
-                <button onclick="switchTab('rules')" class="group relative w-16 h-16 md:w-24 md:h-24 rounded-2xl overflow-hidden transition-all hover:scale-105 focus:outline-none focus:ring-4 ring-pink-100 shadow-sm hover:shadow-md shrink-0">
-                    <img src="image04.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Rules">
-                    <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end justify-center p-1 md:p-2">
-                        <span class="text-[8px] md:text-[10px] text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md">Rules</span>
-                    </div>
-                </button>
-
-                <button onclick="switchTab('lovelist')" class="group relative w-16 h-16 md:w-24 md:h-24 rounded-2xl overflow-hidden transition-all hover:scale-105 focus:outline-none focus:ring-4 ring-pink-100 shadow-sm hover:shadow-md shrink-0">
-                    <img src="image05.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="Lovelist">
-                     <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end justify-center p-1 md:p-2">
-                        <span class="text-[8px] md:text-[10px] text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md">Love</span>
-                    </div>
-                </button>
-
-                <button onclick="switchTab('bl')" class="group relative w-16 h-16 md:w-24 md:h-24 rounded-2xl overflow-hidden transition-all hover:scale-105 focus:outline-none focus:ring-4 ring-pink-100 shadow-sm hover:shadow-md shrink-0">
-                    <img src="image07.jpg" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" alt="BL">
-                     <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end justify-center p-1 md:p-2">
-                        <span class="text-[8px] md:text-[10px] text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md">BL/Yaoi</span>
-                    </div>
-                </button>
-
-                <div class="md:mt-auto">
-                    <button onclick="switchTab('home')" class="group relative w-16 h-16 md:w-24 md:h-24 rounded-2xl overflow-hidden transition-all hover:scale-105 focus:outline-none focus:ring-4 ring-pink-100 shadow-sm hover:shadow-md shrink-0">
-                        <img src="image06.jpg" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity grayscale group-hover:grayscale-0" alt="Home">
-                         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-end justify-center p-1 md:p-2">
-                            <span class="text-[8px] md:text-[10px] text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md">Home</span>
-                        </div>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        lucide.createIcons();
-
-        const contentArea = document.getElementById('content-area');
-        const buttons = document.querySelectorAll('.nav-btn');
-        const appWindow = document.getElementById('app-window');
-        const titleBar = document.getElementById('title-bar');
-        const dockIcon = document.getElementById('dock-icon');
-        const btnMinimize = document.getElementById('btn-minimize');
-        const btnMaximize = document.getElementById('btn-maximize');
-
-        // --- Minimize / Maximize Logic ---
-        let isMaximized = false;
-
-        btnMinimize.addEventListener('click', () => {
-            // Safety: Ensure dragging class is removed so transition can run
-            appWindow.classList.remove('dragging');
-            
-            // Force reflow to ensure browser registers start position for animation
-            void appWindow.offsetWidth;
-            
-            appWindow.classList.add('minimized');
-            dockIcon.classList.remove('translate-y-40', 'opacity-0');
-        });
-
-        window.restoreWindow = () => {
-            appWindow.classList.remove('minimized');
-            dockIcon.classList.add('translate-y-40', 'opacity-0');
-        };
-
-        btnMaximize.addEventListener('click', () => {
-            isMaximized = !isMaximized;
-            // Safety: Remove dragging class
-            appWindow.classList.remove('dragging');
-            
-            if (isMaximized) {
-                appWindow.classList.add('maximized');
-            } else {
-                appWindow.classList.remove('maximized');
-            }
-        });
-
-
-        // --- Window Dragging Logic (Mouse & Touch) ---
-        let isDragging = false;
-        let startX, startY, initialLeft, initialTop;
-
-        function startDrag(e) {
-            // Don't drag if maximized or clicking window controls
-            if(isMaximized || e.target.closest('.win-btn') || e.target.closest('.win-btn-close')) return;
-
-            isDragging = true;
-            // DISABLE TRANSITION DURING DRAG to prevent lag/throwing effect
-            appWindow.classList.add('dragging');
-            
-            if (e.type === 'touchstart') {
-                startX = e.touches[0].clientX;
-                startY = e.touches[0].clientY;
-            } else {
-                startX = e.clientX;
-                startY = e.clientY;
+    <head>
+        <title>lachrymouche &#039;s introduction</title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width,initial-scale=1"/>
+        <meta name="color-scheme" content="light only"/>
+        <meta name="description" content="credits to ilynlocrd"/>
+        <meta property="og:site_name" content="lachrymouche&#039;s introduction"/>
+        <meta property="og:title" content="lachrymouche&#039;s introduction"/>
+        <meta property="og:type" content="website"/>
+        <meta property="og:description" content="credits to ilynlocrd"/>
+        <meta property="og:image" content="https://lachrymouche.carrd.co/assets/images/card.jpg?v=93d7af8e"/>
+        <meta property="og:image:type" content="image/jpeg"/>
+        <meta property="og:image:width" content="1280"/>
+        <meta property="og:image:height" content="800"/>
+        <meta property="og:url" content="https://lachrymouche.carrd.co"/>
+        <meta property="twitter:card" content="summary_large_image"/>
+        <link rel="canonical" href="https://lachrymouche.carrd.co"/>
+        <link href="https://fonts.googleapis.com/css2?display=swap&family=Inter:ital,wght@0,400;0,500;0,600;0,700;0,900;1,400;1,500;1,600;1,700;1,900&family=Shrikhand:ital,wght@0,400;1,400" rel="stylesheet" type="text/css"/>
+        <style>
+            html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video {
+                margin: 0;
+                padding: 0;
+                border: 0;
+                font-size: 100%;
+                font: inherit;
+                vertical-align: baseline;
             }
 
-            const rect = appWindow.getBoundingClientRect();
-
-            // Switch to absolute positioning if not already
-            if (window.getComputedStyle(appWindow).position !== 'absolute') {
-                appWindow.style.position = 'absolute';
-                appWindow.style.left = `${rect.left}px`;
-                appWindow.style.top = `${rect.top}px`;
-                appWindow.style.margin = '0';
-                appWindow.style.transform = 'none'; 
+            article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section {
+                display: block;
             }
 
-            initialLeft = parseFloat(appWindow.style.left) || rect.left;
-            initialTop = parseFloat(appWindow.style.top) || rect.top;
+            body {
+                line-height: 1;
+            }
+
+            ol,ul {
+                list-style: none;
+            }
+
+            blockquote,q {
+                quotes: none;
+            }
+
+            blockquote::before,blockquote::after,q::before,q::after {
+                content: '';
+                content: none;
+            }
+
+            table {
+                border-collapse: collapse;
+                border-spacing: 0;
+            }
+
+            body {
+                -webkit-text-size-adjust: none
+            }
+
+            mark {
+                background-color: transparent;
+                color: inherit
+            }
+
+            input::-moz-focus-inner {
+                border: 0;
+                padding: 0
+            }
+
+            input[type="text"],input[type="email"],select,textarea {
+                -moz-appearance: none;
+                -webkit-appearance: none;
+                -ms-appearance: none;
+                appearance: none
+            }
+
+            *, *::before, *::after {
+                box-sizing: border-box;
+            }
+
+            body {
+                line-height: 1.0;
+                min-height: var(--viewport-height);
+                min-width: 320px;
+                overflow-x: hidden;
+                word-wrap: break-word;
+                background-color: #FFFFFF;
+            }
+
+            :root {
+                --background-height: 100vh;
+                --site-language-alignment: left;
+                --site-language-direction: ltr;
+                --site-language-flex-alignment: flex-start;
+                --site-language-indent-left: 1;
+                --site-language-indent-right: 0;
+                --site-language-margin-left: 0;
+                --site-language-margin-right: auto;
+                --viewport-height: 100vh;
+            }
+
+            html {
+                font-size: 18pt;
+            }
+
+            u {
+                text-decoration: underline;
+            }
+
+            strong {
+                color: inherit;
+                font-weight: bolder;
+            }
+
+            em {
+                font-style: italic;
+            }
+
+            code {
+                background-color: rgba(144,144,144,0.25);
+                border-radius: 0.25em;
+                font-family: 'Lucida Console', 'Courier New', monospace;
+                font-size: 0.9em;
+                font-weight: normal;
+                letter-spacing: 0;
+                margin: 0 0.25em;
+                padding: 0.25em 0.5em;
+                text-indent: 0;
+            }
+
+            mark {
+                background-color: rgba(144,144,144,0.25);
+            }
+
+            spoiler-text {
+                -webkit-text-stroke: 0;
+                background-color: rgba(32,32,32,0.75);
+                text-shadow: none;
+                text-stroke: 0;
+                color: transparent;
+                cursor: pointer;
+                transition: color 0.1s ease-in-out;
+            }
+
+            spoiler-text.active {
+                color: #FFFFFF;
+                cursor: text;
+            }
+
+            s {
+                text-decoration: line-through;
+            }
+
+            sub {
+                font-size: smaller;
+                vertical-align: sub;
+            }
+
+            sup {
+                font-size: smaller;
+                vertical-align: super;
+            }
+
+            a {
+                color: inherit;
+                text-decoration: underline;
+                transition: color 0.25s ease;
+            }
+
+            a[onclick]:not([href]) {
+                cursor: pointer;
+            }
+
+            unloaded-script {
+                display: none;
+            }
+
+            .site-wrapper {
+                -webkit-overflow-scrolling: touch;
+                align-items: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                min-height: var(--viewport-height);
+                overflow: hidden;
+                position: relative;
+                z-index: 2;
+                padding: 1rem 1rem 1rem 1rem;
+            }
+
+            .site-main {
+                --alignment: var(--site-language-alignment);
+                --flex-alignment: var(--site-language-flex-alignment);
+                --indent-left: var(--site-language-indent-left);
+                --indent-right: var(--site-language-indent-right);
+                --margin-left: var(--site-language-margin-left);
+                --margin-right: var(--site-language-margin-right);
+                --border-radius-tl: 0;
+                --border-radius-tr: 0;
+                --border-radius-br: 0;
+                --border-radius-bl: 0;
+                align-items: center;
+                display: flex;
+                flex-grow: 0;
+                flex-shrink: 0;
+                justify-content: center;
+                max-width: 100%;
+                position: relative;
+                text-align: var(--alignment);
+                z-index: 1;
+                background-color: #FFFFFF;
+                transition: opacity 1s ease 0s,transform 1s ease 0s;
+            }
+
+            .site-main > .inner {
+                --padding-horizontal: 0rem;
+                --padding-vertical: 0rem;
+                --spacing: 0.75rem;
+                --width: 22rem;
+                border-radius: var(--border-radius-tl) var(--border-radius-tr) var(--border-radius-br) var(--border-radius-bl);
+                max-width: 100%;
+                position: relative;
+                width: var(--width);
+                z-index: 1;
+                padding: var(--padding-vertical) var(--padding-horizontal);
+            }
+
+            .site-main > .inner > header {
+                margin-bottom: var(--spacing);
+                border-top-left-radius: inherit;
+                border-top-right-radius: inherit;
+            }
+
+            .site-main > .inner > footer {
+                margin-top: var(--spacing);
+                border-bottom-left-radius: inherit;
+                border-bottom-right-radius: inherit;
+            }
+
+            .site-main > .inner > * > * {
+                margin-top: var(--spacing);
+                margin-bottom: var(--spacing);
+            }
+
+            .site-main > .inner > * > :first-child {
+                margin-top: 0 !important;
+            }
+
+            .site-main > .inner > * > :last-child {
+                margin-bottom: 0 !important;
+            }
+
+            .site-main > .inner > .full {
+                margin-left: calc(var(--padding-horizontal) * -1);
+                max-width: calc(100% + calc(var(--padding-horizontal) * 2) + 0.4725px);
+                width: calc(100% + calc(var(--padding-horizontal) * 2) + 0.4725px);
+            }
+
+            .site-main > .inner > .full:first-child {
+                border-top-left-radius: inherit;
+                border-top-right-radius: inherit;
+                margin-top: calc(var(--padding-vertical) * -1) !important;
+            }
+
+            .site-main > .inner > .full:last-child {
+                border-bottom-left-radius: inherit;
+                border-bottom-right-radius: inherit;
+                margin-bottom: calc(var(--padding-vertical) * -1) !important;
+            }
+
+            .site-main > .inner > .full.screen {
+                border-radius: 0 !important;
+                max-width: 100vw;
+                position: relative;
+                width: 100vw;
+                left: 50%;
+                margin-left: -50vw;
+                right: auto;
+            }
+
+            .site-main > .inner > * > .full {
+                margin-left: calc(0rem);
+                max-width: calc(100% + 0rem + 0.4725px);
+                width: calc(100% + 0rem + 0.4725px);
+            }
+
+            .site-main > .inner > * > .full.screen {
+                border-radius: 0 !important;
+                max-width: 100vw;
+                position: relative;
+                width: 100vw;
+                left: 50%;
+                margin-left: -50vw;
+                right: auto;
+            }
+
+            .site-main > .inner > header > .full:first-child {
+                border-top-left-radius: inherit;
+                border-top-right-radius: inherit;
+                margin-top: 0rem !important;
+            }
+
+            .site-main > .inner > footer > .full:last-child {
+                margin-bottom: 0rem !important;
+                border-bottom-left-radius: inherit;
+                border-bottom-right-radius: inherit;
+            }
+
+            body.is-loading .site-main {
+                opacity: 0;
+                transform: translateY(1.6875rem);
+            }
+
+            .site-main > .inner > header, .site-main > .inner > footer {
+                transition: opacity 0.25s ease-in-out 0.375s,visibility 0.25s linear 0.375s;
+            }
+
+            .site-main > .inner > header.hidden, .site-main > .inner > footer.hidden {
+                transition: opacity 0.25s ease-in-out, visibility 0.25s;
+                opacity: 0;
+                visibility: hidden;
+            }
+
+            .site-main > .inner > section {
+                transition: opacity 0.5s ease-in-out 0.25s,min-height 0.25s ease-in-out, max-height 0.25s ease-in-out;
+            }
+
+            .site-main > .inner > section.inactive {
+                opacity: 0;
+                transition: opacity 0.25s ease-in-out;
+            }
+
+            body.is-instant .site-main, body.is-instant .site-main > .inner > *,body.is-instant .site-main > .inner > section > * {
+                transition: none !important;
+            }
+
+            body.is-instant::after {
+                display: none !important;
+                transition: none !important;
+            }
+
+            .container-component {
+                position: relative;
+            }
+
+            .container-component > .wrapper {
+                vertical-align: top;
+                position: relative;
+                max-width: 100%;
+                border-radius: inherit;
+            }
+
+            .container-component > .wrapper > .inner {
+                vertical-align: top;
+                position: relative;
+                max-width: 100%;
+                border-radius: inherit;
+                text-align: var(--alignment);
+            }
+
+            .container-component.full:first-child > .wrapper {
+                border-top-left-radius: inherit;
+                border-top-right-radius: inherit;
+            }
+
+            .container-component.full:last-child > .wrapper {
+                border-bottom-left-radius: inherit;
+                border-bottom-right-radius: inherit;
+            }
+
+            .container-component.full:first-child > .wrapper > .inner {
+                border-top-left-radius: inherit;
+                border-top-right-radius: inherit;
+            }
+
+            .container-component.full:last-child > .wrapper > .inner {
+                border-bottom-left-radius: inherit;
+                border-bottom-right-radius: inherit;
+            }
+
+            .container-component.instance-1 > .wrapper {
+                display: block;
+                margin: 0 auto 0 auto;
+                width: 75rem;
+                background-color: transparent;
+            }
+
+            .container-component.instance-1 > .wrapper > .inner {
+                --gutters: 0.25rem;
+                --padding-horizontal: 0.25rem;
+                --padding-vertical: 0.25rem;
+                padding: var(--padding-vertical) var(--padding-horizontal);
+            }
+
+            .container-component.instance-1.default > .wrapper > .inner > * {
+                margin-bottom: var(--spacing);
+                margin-top: var(--spacing);
+            }
+
+            .container-component.instance-1.default > .wrapper > .inner > *:first-child {
+                margin-top: 0 !important;
+            }
+
+            .container-component.instance-1.default > .wrapper > .inner > *:last-child {
+                margin-bottom: 0 !important;
+            }
+
+            .container-component.instance-1.columns > .wrapper > .inner {
+                flex-wrap: wrap;
+                display: flex;
+                align-items: flex-start;
+            }
+
+            .container-component.instance-1.columns > .wrapper > .inner > * {
+                flex-grow: 0;
+                flex-shrink: 0;
+                max-width: 100%;
+                text-align: var(--alignment);
+                padding: 0 0 0 var(--gutters);
+            }
+
+            .container-component.instance-1.columns > .wrapper > .inner > * > * {
+                margin-bottom: var(--spacing);
+                margin-top: var(--spacing);
+            }
+
+            .container-component.instance-1.columns > .wrapper > .inner > * > *:first-child {
+                margin-top: 0 !important;
+            }
+
+            .container-component.instance-1.columns > .wrapper > .inner > * > *:last-child {
+                margin-bottom: 0 !important;
+            }
+
+            .container-component.instance-1.columns > .wrapper > .inner > *:first-child {
+                margin-left: calc(var(--gutters) * -1);
+            }
+
+            .container-component.instance-1.default > .wrapper > .inner > .full {
+                margin-left: calc(var(--padding-horizontal) * -1);
+                max-width: none !important;
+                width: calc(100% + (var(--padding-horizontal) * 2) + 0.4725px);
+            }
+
+            .container-component.instance-1.default > .wrapper > .inner > .full:first-child {
+                margin-top: calc(var(--padding-vertical) * -1) !important;
+                border-top-left-radius: inherit;
+                border-top-right-radius: inherit;
+            }
+
+            .container-component.instance-1.default > .wrapper > .inner > .full:last-child {
+                margin-bottom: calc(var(--padding-vertical) * -1) !important;
+                border-bottom-left-radius: inherit;
+                border-bottom-right-radius: inherit;
+            }
+
+            .container-component.instance-1.columns > .wrapper > .inner > div > .full {
+                margin-left: calc(var(--gutters) * -0.5);
+                max-width: none !important;
+                width: calc(100% + var(--gutters) + 0.4725px);
+            }
+
+            .container-component.instance-1.columns > .wrapper > .inner > div:first-child > .full {
+                margin-left: calc(var(--padding-horizontal) * -1);
+                width: calc(100% + var(--padding-horizontal) + calc(var(--gutters) * 0.5) + 0.4725px);
+            }
+
+            .container-component.instance-1.columns > .wrapper > .inner > div:last-child > .full {
+                width: calc(100% + var(--padding-horizontal) + calc(var(--gutters) * 0.5) + 0.4725px);
+            }
+
+            .container-component.instance-1.columns > .wrapper > .inner > div > .full:first-child {
+                margin-top: calc(var(--padding-vertical) * -1) !important;
+            }
+
+            .container-component.instance-1.columns > .wrapper > .inner > div > .full:last-child {
+                margin-bottom: calc(var(--padding-vertical) * -1) !important;
+            }
+
+            .container-component.instance-1.columns > .wrapper > .inner > div:first-child, .container-component.instance-1.columns > .wrapper > .inner > div:first-child > .full:first-child {
+                border-top-left-radius: inherit;
+            }
+
+            .container-component.instance-1.columns > .wrapper > .inner > div:last-child, .container-component.instance-1.columns > .wrapper > .inner > div:last-child > .full:first-child {
+                border-top-right-radius: inherit;
+            }
+
+            .container-component.instance-1.columns > .wrapper > .inner > .full {
+                align-self: stretch;
+            }
+
+            .container-component.instance-1.columns > .wrapper > .inner > .full:first-child {
+                border-bottom-left-radius: inherit;
+                border-top-left-radius: inherit;
+            }
+
+            .container-component.instance-1.columns > .wrapper > .inner > .full:last-child {
+                border-bottom-right-radius: inherit;
+                border-top-right-radius: inherit;
+            }
+
+            .container-component.instance-1.columns > .wrapper > .inner > .full > .full:first-child:last-child {
+                border-radius: inherit;
+                height: calc(100% + (var(--padding-vertical) * 2));
+            }
+
+            .container-component.instance-1.columns > .wrapper > .inner > .full > .full:first-child:last-child > * {
+                border-radius: inherit;
+                height: 100%;
+                position: absolute;
+                width: 100%;
+            }
+
+            .container-component.instance-1 > .wrapper > .inner > :nth-child(1) {
+                width: calc(50% + (var(--gutters) / 2));
+            }
+
+            .container-component.instance-1 > .wrapper > .inner > :nth-child(2) {
+                width: calc(50% + (var(--gutters) / 2));
+            }
+
+            .container-component.instance-2 > .wrapper {
+                display: block;
+                margin: 0 auto 0 auto;
+                width: 75rem;
+                background-color: transparent;
+            }
+
+            .container-component.instance-2 > .wrapper > .inner {
+                --gutters: 0.25rem;
+                --padding-horizontal: 0.25rem;
+                --padding-vertical: 0.25rem;
+                padding: var(--padding-vertical) var(--padding-horizontal);
+            }
+
+            .container-component.instance-2.default > .wrapper > .inner > * {
+                margin-bottom: var(--spacing);
+                margin-top: var(--spacing);
+            }
+
+            .container-component.instance-2.default > .wrapper > .inner > *:first-child {
+                margin-top: 0 !important;
+            }
+
+            .container-component.instance-2.default > .wrapper > .inner > *:last-child {
+                margin-bottom: 0 !important;
+            }
+
+            .container-component.instance-2.columns > .wrapper > .inner {
+                flex-wrap: wrap;
+                display: flex;
+                align-items: flex-start;
+            }
+
+            .container-component.instance-2.columns > .wrapper > .inner > * {
+                flex-grow: 0;
+                flex-shrink: 0;
+                max-width: 100%;
+                text-align: var(--alignment);
+                padding: 0 0 0 var(--gutters);
+            }
+
+            .container-component.instance-2.columns > .wrapper > .inner > * > * {
+                margin-bottom: var(--spacing);
+                margin-top: var(--spacing);
+            }
+
+            .container-component.instance-2.columns > .wrapper > .inner > * > *:first-child {
+                margin-top: 0 !important;
+            }
+
+            .container-component.instance-2.columns > .wrapper > .inner > * > *:last-child {
+                margin-bottom: 0 !important;
+            }
+
+            .container-component.instance-2.columns > .wrapper > .inner > *:first-child {
+                margin-left: calc(var(--gutters) * -1);
+            }
+
+            .container-component.instance-2.default > .wrapper > .inner > .full {
+                margin-left: calc(var(--padding-horizontal) * -1);
+                max-width: none !important;
+                width: calc(100% + (var(--padding-horizontal) * 2) + 0.4725px);
+            }
+
+            .container-component.instance-2.default > .wrapper > .inner > .full:first-child {
+                margin-top: calc(var(--padding-vertical) * -1) !important;
+                border-top-left-radius: inherit;
+                border-top-right-radius: inherit;
+            }
+
+            .container-component.instance-2.default > .wrapper > .inner > .full:last-child {
+                margin-bottom: calc(var(--padding-vertical) * -1) !important;
+                border-bottom-left-radius: inherit;
+                border-bottom-right-radius: inherit;
+            }
+
+            .container-component.instance-2.columns > .wrapper > .inner > div > .full {
+                margin-left: calc(var(--gutters) * -0.5);
+                max-width: none !important;
+                width: calc(100% + var(--gutters) + 0.4725px);
+            }
+
+            .container-component.instance-2.columns > .wrapper > .inner > div:first-child > .full {
+                margin-left: calc(var(--padding-horizontal) * -1);
+                width: calc(100% + var(--padding-horizontal) + calc(var(--gutters) * 0.5) + 0.4725px);
+            }
+
+            .container-component.instance-2.columns > .wrapper > .inner > div:last-child > .full {
+                width: calc(100% + var(--padding-horizontal) + calc(var(--gutters) * 0.5) + 0.4725px);
+            }
+
+            .container-component.instance-2.columns > .wrapper > .inner > div > .full:first-child {
+                margin-top: calc(var(--padding-vertical) * -1) !important;
+            }
+
+            .container-component.instance-2.columns > .wrapper > .inner > div > .full:last-child {
+                margin-bottom: calc(var(--padding-vertical) * -1) !important;
+            }
+
+            .container-component.instance-2.columns > .wrapper > .inner > div:first-child, .container-component.instance-2.columns > .wrapper > .inner > div:first-child > .full:first-child {
+                border-top-left-radius: inherit;
+            }
+
+            .container-component.instance-2.columns > .wrapper > .inner > div:last-child, .container-component.instance-2.columns > .wrapper > .inner > div:last-child > .full:first-child {
+                border-top-right-radius: inherit;
+            }
+
+            .container-component.instance-2.columns > .wrapper > .inner > .full {
+                align-self: stretch;
+            }
+
+            .container-component.instance-2.columns > .wrapper > .inner > .full:first-child {
+                border-bottom-left-radius: inherit;
+                border-top-left-radius: inherit;
+            }
+
+            .container-component.instance-2.columns > .wrapper > .inner > .full:last-child {
+                border-bottom-right-radius: inherit;
+                border-top-right-radius: inherit;
+            }
+
+            .container-component.instance-2.columns > .wrapper > .inner > .full > .full:first-child:last-child {
+                border-radius: inherit;
+                height: calc(100% + (var(--padding-vertical) * 2));
+            }
+
+            .container-component.instance-2.columns > .wrapper > .inner > .full > .full:first-child:last-child > * {
+                border-radius: inherit;
+                height: 100%;
+                position: absolute;
+                width: 100%;
+            }
+
+            .container-component.instance-2 > .wrapper > .inner > :nth-child(1) {
+                width: calc(40% + (var(--gutters) / 3));
+            }
+
+            .container-component.instance-2 > .wrapper > .inner > :nth-child(2) {
+                width: calc(30% + (var(--gutters) / 3));
+            }
+
+            .container-component.instance-2 > .wrapper > .inner > :nth-child(3) {
+                width: calc(30% + (var(--gutters) / 3));
+            }
+
+            .container-component.instance-3 > .wrapper {
+                display: block;
+                margin: 0 auto 0 auto;
+                width: 75rem;
+                background-color: transparent;
+            }
+
+            .container-component.instance-3 > .wrapper > .inner {
+                --gutters: 0.25rem;
+                --padding-horizontal: 0.25rem;
+                --padding-vertical: 0.25rem;
+                padding: var(--padding-vertical) var(--padding-horizontal);
+            }
+
+            .container-component.instance-3.default > .wrapper > .inner > * {
+                margin-bottom: var(--spacing);
+                margin-top: var(--spacing);
+            }
+
+            .container-component.instance-3.default > .wrapper > .inner > *:first-child {
+                margin-top: 0 !important;
+            }
+
+            .container-component.instance-3.default > .wrapper > .inner > *:last-child {
+                margin-bottom: 0 !important;
+            }
+
+            .container-component.instance-3.columns > .wrapper > .inner {
+                flex-wrap: wrap;
+                display: flex;
+                align-items: flex-start;
+            }
+
+            .container-component.instance-3.columns > .wrapper > .inner > * {
+                flex-grow: 0;
+                flex-shrink: 0;
+                max-width: 100%;
+                text-align: var(--alignment);
+                padding: 0 0 0 var(--gutters);
+            }
+
+            .container-component.instance-3.columns > .wrapper > .inner > * > * {
+                margin-bottom: var(--spacing);
+                margin-top: var(--spacing);
+            }
+
+            .container-component.instance-3.columns > .wrapper > .inner > * > *:first-child {
+                margin-top: 0 !important;
+            }
+
+            .container-component.instance-3.columns > .wrapper > .inner > * > *:last-child {
+                margin-bottom: 0 !important;
+            }
+
+            .container-component.instance-3.columns > .wrapper > .inner > *:first-child {
+                margin-left: calc(var(--gutters) * -1);
+            }
+
+            .container-component.instance-3.default > .wrapper > .inner > .full {
+                margin-left: calc(var(--padding-horizontal) * -1);
+                max-width: none !important;
+                width: calc(100% + (var(--padding-horizontal) * 2) + 0.4725px);
+            }
+
+            .container-component.instance-3.default > .wrapper > .inner > .full:first-child {
+                margin-top: calc(var(--padding-vertical) * -1) !important;
+                border-top-left-radius: inherit;
+                border-top-right-radius: inherit;
+            }
+
+            .container-component.instance-3.default > .wrapper > .inner > .full:last-child {
+                margin-bottom: calc(var(--padding-vertical) * -1) !important;
+                border-bottom-left-radius: inherit;
+                border-bottom-right-radius: inherit;
+            }
+
+            .container-component.instance-3.columns > .wrapper > .inner > div > .full {
+                margin-left: calc(var(--gutters) * -0.5);
+                max-width: none !important;
+                width: calc(100% + var(--gutters) + 0.4725px);
+            }
+
+            .container-component.instance-3.columns > .wrapper > .inner > div:first-child > .full {
+                margin-left: calc(var(--padding-horizontal) * -1);
+                width: calc(100% + var(--padding-horizontal) + calc(var(--gutters) * 0.5) + 0.4725px);
+            }
+
+            .container-component.instance-3.columns > .wrapper > .inner > div:last-child > .full {
+                width: calc(100% + var(--padding-horizontal) + calc(var(--gutters) * 0.5) + 0.4725px);
+            }
+
+            .container-component.instance-3.columns > .wrapper > .inner > div > .full:first-child {
+                margin-top: calc(var(--padding-vertical) * -1) !important;
+            }
+
+            .container-component.instance-3.columns > .wrapper > .inner > div > .full:last-child {
+                margin-bottom: calc(var(--padding-vertical) * -1) !important;
+            }
+
+            .container-component.instance-3.columns > .wrapper > .inner > div:first-child, .container-component.instance-3.columns > .wrapper > .inner > div:first-child > .full:first-child {
+                border-top-left-radius: inherit;
+            }
+
+            .container-component.instance-3.columns > .wrapper > .inner > div:last-child, .container-component.instance-3.columns > .wrapper > .inner > div:last-child > .full:first-child {
+                border-top-right-radius: inherit;
+            }
+
+            .container-component.instance-3.columns > .wrapper > .inner > .full {
+                align-self: stretch;
+            }
+
+            .container-component.instance-3.columns > .wrapper > .inner > .full:first-child {
+                border-bottom-left-radius: inherit;
+                border-top-left-radius: inherit;
+            }
+
+            .container-component.instance-3.columns > .wrapper > .inner > .full:last-child {
+                border-bottom-right-radius: inherit;
+                border-top-right-radius: inherit;
+            }
+
+            .container-component.instance-3.columns > .wrapper > .inner > .full > .full:first-child:last-child {
+                border-radius: inherit;
+                height: calc(100% + (var(--padding-vertical) * 2));
+            }
+
+            .container-component.instance-3.columns > .wrapper > .inner > .full > .full:first-child:last-child > * {
+                border-radius: inherit;
+                height: 100%;
+                position: absolute;
+                width: 100%;
+            }
+
+            .container-component.instance-3 > .wrapper > .inner > :nth-child(1) {
+                width: calc(35% + (var(--gutters) / 2));
+            }
+
+            .container-component.instance-3 > .wrapper > .inner > :nth-child(2) {
+                width: calc(65% + (var(--gutters) / 2));
+            }
+
+            .container-component.instance-4 > .wrapper {
+                display: block;
+                margin: 0 auto 0 auto;
+                width: 75rem;
+                background-color: transparent;
+            }
+
+            .container-component.instance-4 > .wrapper > .inner {
+                --gutters: 0.25rem;
+                --padding-horizontal: 0.25rem;
+                --padding-vertical: 0.25rem;
+                padding: var(--padding-vertical) var(--padding-horizontal);
+            }
+
+            .container-component.instance-4.default > .wrapper > .inner > * {
+                margin-bottom: var(--spacing);
+                margin-top: var(--spacing);
+            }
+
+            .container-component.instance-4.default > .wrapper > .inner > *:first-child {
+                margin-top: 0 !important;
+            }
+
+            .container-component.instance-4.default > .wrapper > .inner > *:last-child {
+                margin-bottom: 0 !important;
+            }
+
+            .container-component.instance-4.columns > .wrapper > .inner {
+                flex-wrap: wrap;
+                display: flex;
+                align-items: flex-start;
+            }
+
+            .container-component.instance-4.columns > .wrapper > .inner > * {
+                flex-grow: 0;
+                flex-shrink: 0;
+                max-width: 100%;
+                text-align: var(--alignment);
+                padding: 0 0 0 var(--gutters);
+            }
+
+            .container-component.instance-4.columns > .wrapper > .inner > * > * {
+                margin-bottom: var(--spacing);
+                margin-top: var(--spacing);
+            }
+
+            .container-component.instance-4.columns > .wrapper > .inner > * > *:first-child {
+                margin-top: 0 !important;
+            }
+
+            .container-component.instance-4.columns > .wrapper > .inner > * > *:last-child {
+                margin-bottom: 0 !important;
+            }
+
+            .container-component.instance-4.columns > .wrapper > .inner > *:first-child {
+                margin-left: calc(var(--gutters) * -1);
+            }
+
+            .container-component.instance-4.default > .wrapper > .inner > .full {
+                margin-left: calc(var(--padding-horizontal) * -1);
+                max-width: none !important;
+                width: calc(100% + (var(--padding-horizontal) * 2) + 0.4725px);
+            }
+
+            .container-component.instance-4.default > .wrapper > .inner > .full:first-child {
+                margin-top: calc(var(--padding-vertical) * -1) !important;
+                border-top-left-radius: inherit;
+                border-top-right-radius: inherit;
+            }
+
+            .container-component.instance-4.default > .wrapper > .inner > .full:last-child {
+                margin-bottom: calc(var(--padding-vertical) * -1) !important;
+                border-bottom-left-radius: inherit;
+                border-bottom-right-radius: inherit;
+            }
+
+            .container-component.instance-4.columns > .wrapper > .inner > div > .full {
+                margin-left: calc(var(--gutters) * -0.5);
+                max-width: none !important;
+                width: calc(100% + var(--gutters) + 0.4725px);
+            }
+
+            .container-component.instance-4.columns > .wrapper > .inner > div:first-child > .full {
+                margin-left: calc(var(--padding-horizontal) * -1);
+                width: calc(100% + var(--padding-horizontal) + calc(var(--gutters) * 0.5) + 0.4725px);
+            }
+
+            .container-component.instance-4.columns > .wrapper > .inner > div:last-child > .full {
+                width: calc(100% + var(--padding-horizontal) + calc(var(--gutters) * 0.5) + 0.4725px);
+            }
+
+            .container-component.instance-4.columns > .wrapper > .inner > div > .full:first-child {
+                margin-top: calc(var(--padding-vertical) * -1) !important;
+            }
+
+            .container-component.instance-4.columns > .wrapper > .inner > div > .full:last-child {
+                margin-bottom: calc(var(--padding-vertical) * -1) !important;
+            }
+
+            .container-component.instance-4.columns > .wrapper > .inner > div:first-child, .container-component.instance-4.columns > .wrapper > .inner > div:first-child > .full:first-child {
+                border-top-left-radius: inherit;
+            }
+
+            .container-component.instance-4.columns > .wrapper > .inner > div:last-child, .container-component.instance-4.columns > .wrapper > .inner > div:last-child > .full:first-child {
+                border-top-right-radius: inherit;
+            }
+
+            .container-component.instance-4.columns > .wrapper > .inner > .full {
+                align-self: stretch;
+            }
+
+            .container-component.instance-4.columns > .wrapper > .inner > .full:first-child {
+                border-bottom-left-radius: inherit;
+                border-top-left-radius: inherit;
+            }
+
+            .container-component.instance-4.columns > .wrapper > .inner > .full:last-child {
+                border-bottom-right-radius: inherit;
+                border-top-right-radius: inherit;
+            }
+
+            .container-component.instance-4.columns > .wrapper > .inner > .full > .full:first-child:last-child {
+                border-radius: inherit;
+                height: calc(100% + (var(--padding-vertical) * 2));
+            }
+
+            .container-component.instance-4.columns > .wrapper > .inner > .full > .full:first-child:last-child > * {
+                border-radius: inherit;
+                height: 100%;
+                position: absolute;
+                width: 100%;
+            }
+
+            .container-component.instance-4 > .wrapper > .inner > :nth-child(1) {
+                width: calc(65% + (var(--gutters) / 2));
+            }
+
+            .container-component.instance-4 > .wrapper > .inner > :nth-child(2) {
+                width: calc(35% + (var(--gutters) / 2));
+            }
+
+            .container-component.instance-5 > .wrapper {
+                display: block;
+                margin: 0 auto 0 auto;
+                width: 75rem;
+                background-color: #A3A3A3;
+                background-image: url('data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20512%20512%22%20width%3D%22512%22%20height%3D%22512%22%20preserveAspectRatio%3D%22none%22%3E%20%3Cstyle%3E%20line%20%7B%20stroke-linecap%3A%20square%3B%20stroke-width%3A%2025.01px%3B%20stroke%3A%20rgba(189,189,189,0.502)%3B%20vector-effect%3A%20non-scaling-stroke%3B%20%7D%20%3C%2Fstyle%3E%20%3Cline%20x1%3D%22256%22%20y1%3D%220%22%20x2%3D%220%22%20y2%3D%22256%22%20%2F%3E%20%3Cline%20x1%3D%22256%22%20y1%3D%22512%22%20x2%3D%22512%22%20y2%3D%22256%22%20%2F%3E%3C%2Fsvg%3E');
+                background-size: 98px;
+                background-position: center;
+                background-repeat: repeat;
+                border-radius: 6rem;
+            }
+
+            .container-component.instance-5 > .wrapper > .inner {
+                --gutters: 0.25rem;
+                --padding-horizontal: 0.625rem;
+                --padding-vertical: 0.25rem;
+                padding: var(--padding-vertical) var(--padding-horizontal);
+                border-radius: calc(6rem - 0px);
+            }
+
+            /* Modern Player CSS */
+            .modern-player-wrapper {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                padding: 0.5rem 1.5rem;
+                gap: 1.5rem;
+                color: #fff;
+            }
             
-            if(e.type === 'mousedown') e.preventDefault();
-        }
-
-        function doDrag(e) {
-            if (!isDragging) return;
-
-            let clientX, clientY;
-
-            if (e.type === 'touchmove') {
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            } else {
-                clientX = e.clientX;
-                clientY = e.clientY;
+            .player-left {
+                display: flex;
+                align-items: center;
             }
 
-            const dx = clientX - startX;
-            const dy = clientY - startY;
-
-            appWindow.style.left = `${initialLeft + dx}px`;
-            appWindow.style.top = `${initialTop + dy}px`;
+            .play-pause-btn {
+                background: rgba(255, 255, 255, 0.2);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                backdrop-filter: blur(4px);
+                border-radius: 50%;
+                width: 3.5rem;
+                height: 3.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            }
             
-            if(e.type === 'touchmove') e.preventDefault();
-        }
-
-        function endDrag() {
-            isDragging = false;
-            // RE-ENABLE TRANSITIONS after drag ends
-            appWindow.classList.remove('dragging');
-        }
-
-        titleBar.addEventListener('mousedown', startDrag);
-        document.addEventListener('mousemove', doDrag);
-        document.addEventListener('mouseup', endDrag);
-
-        titleBar.addEventListener('touchstart', startDrag, { passive: false });
-        document.addEventListener('touchmove', doDrag, { passive: false });
-        document.addEventListener('touchend', endDrag);
-
-
-        // --- Audio Player Logic ---
-        const audio = document.getElementById('bg-music');
-        const playBtn = document.getElementById('play-btn');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        const discIcon = document.querySelector('.play-spin');
-        const seekSlider = document.getElementById('seek-slider');
-
-        function togglePlay() {
-            if (audio.paused) {
-                audio.play().then(() => {
-                    playBtn.innerHTML = '<i data-lucide="pause" class="w-4 h-4 ml-0.5"></i>';
-                    lucide.createIcons();
-                    discIcon.style.animationPlayState = 'running';
-                }).catch(e => console.log("Audio error:", e));
-            } else {
-                audio.pause();
-                playBtn.innerHTML = '<i data-lucide="play" class="w-4 h-4 ml-0.5"></i>';
-                lucide.createIcons();
-                discIcon.style.animationPlayState = 'paused';
+            .play-pause-btn:hover {
+                background: rgba(255, 255, 255, 0.3);
+                transform: scale(1.05);
             }
-        }
 
-        function restartTrack() {
-            audio.currentTime = 0;
-            if(audio.paused) {
-                togglePlay();
+            .play-pause-btn svg {
+                width: 1.5rem;
+                height: 1.5rem;
+                fill: #fff;
             }
-        }
 
-        playBtn.addEventListener('click', togglePlay);
-        prevBtn.addEventListener('click', restartTrack);
-        nextBtn.addEventListener('click', restartTrack);
-
-        audio.addEventListener('timeupdate', () => {
-            if (audio.duration) {
-                const progress = (audio.currentTime / audio.duration) * 100;
-                seekSlider.value = progress;
-                const value = ((progress - seekSlider.min) / (seekSlider.max - seekSlider.min)) * 100;
-                seekSlider.style.background = `linear-gradient(to right, #f472b6 0%, #f472b6 ${value}%, #fce7f3 ${value}%, #fce7f3 100%)`;
+            .player-center {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                gap: 0.4rem;
             }
-        });
 
-        seekSlider.addEventListener('input', () => {
-            if (audio.duration) {
-                const seekTime = (seekSlider.value / 100) * audio.duration;
-                audio.currentTime = seekTime;
-                const value = ((seekSlider.value - seekSlider.min) / (seekSlider.max - seekSlider.min)) * 100;
-                seekSlider.style.background = `linear-gradient(to right, #f472b6 0%, #f472b6 ${value}%, #fce7f3 ${value}%, #fce7f3 100%)`;
+            .track-details {
+                display: flex;
+                flex-direction: column;
+                line-height: 1.2;
             }
-        });
+            
+            .track-title {
+                font-family: 'Inter', sans-serif;
+                font-weight: 700;
+                font-size: 0.9rem;
+                letter-spacing: -0.01em;
+            }
+            
+            .track-artist {
+                font-family: 'Inter', sans-serif;
+                font-weight: 400;
+                font-size: 0.75rem;
+                opacity: 0.8;
+            }
 
-        // Content Templates
-        const contents = {
-            home: `
-                <div class="flex flex-col items-center text-center space-y-6 fade-enter-active">
-                    <div class="relative w-full max-w-[280px] aspect-video rounded-2xl overflow-hidden shadow-sm">
-                         <img src="image02.jpg" class="w-full h-full object-cover" alt="Sleepy">
-                         <div class="absolute inset-0 bg-gradient-to-t from-white/40 to-transparent"></div>
-                    </div>
-                    
-                    <div class="space-y-2">
-                        <h2 class="text-xl font-cute text-gray-700">fandoms I'm in</h2>
-                        <div class="flex flex-wrap justify-center gap-2">
-                            <span class="px-3 py-1 bg-pink-50 text-pink-400 rounded-full text-xs hover:bg-pink-100 transition-colors cursor-default">neon genesis evangelion</span>
-                            <span class="px-3 py-1 bg-blue-50 text-blue-400 rounded-full text-xs hover:bg-blue-100 transition-colors cursor-default">haibane renmei</span>
-                            <span class="px-3 py-1 bg-purple-50 text-purple-400 rounded-full text-xs hover:bg-purple-100 transition-colors cursor-default">genshin impact</span>
-                        </div>
-                    </div>
-                    
-                    <p class="text-xs text-gray-400 italic max-w-xs leading-relaxed">
-                        "dreams are the only place where we can truly be ourselves."
-                    </p>
-                </div>
-            `,
-            rules: `
-                <div class="fade-enter-active h-full flex flex-col mt-4 md:mt-0">
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="w-12 h-12 rounded-full overflow-hidden shrink-0">
-                            <img src="image04.jpg" class="w-full h-full object-cover" alt="Rules Header Image">
-                        </div>
-                        <div>
-                            <h2 class="text-2xl font-cute text-gray-700">byf / dni</h2>
-                            <p class="text-xs text-gray-400">please read carefully...</p>
-                        </div>
-                    </div>
+            .progress-area {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                width: 100%;
+            }
 
-                    <div class="space-y-4 overflow-y-auto custom-scroll pr-2 flex-1">
-                        <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                            <h3 class="text-sm font-bold text-blue-400 mb-2 flex items-center gap-1"><i data-lucide="heart" class="w-3 h-3 fill-current"></i> Before You Follow</h3>
-                            <ul class="text-xs text-gray-500 space-y-1 list-disc list-inside">
-                                <li>I tweet a lot about my interests.</li>
-                                <li>I am very shy but I love making new friends! Please be patient with me.</li>
-                                <li>I softblock to break mutuals.</li>
-                                <li>I'm annoying and get attached easily.</li>
-                            </ul>
-                        </div>
+            .time-display {
+                font-family: 'Inter', monospace;
+                font-size: 0.7rem;
+                opacity: 0.8;
+                min-width: 2.5rem;
+            }
 
-                        <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                            <h3 class="text-sm font-bold text-pink-400 mb-2 flex items-center gap-1"><i data-lucide="x" class="w-3 h-3"></i> Do Not Interact</h3>
-                            <ul class="text-xs text-gray-500 space-y-1 list-disc list-inside">
-                                <li>Basic DNI criteria applies.</li>
-                                <li>If you're here to use me, **gtfo**.</li>
-                                <li>NSFW accounts / heavy gore.</li>
-                                <li>Endo systems.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            `,
-            lovelist: `
-                <div class="fade-enter-active h-full flex flex-col mt-4 md:mt-0">
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="w-12 h-12 rounded-full overflow-hidden shrink-0">
-                            <img src="image05.jpg" class="w-full h-full object-cover" alt="Lovelist Header Image">
-                        </div>
-                        <div>
-                            <h2 class="text-2xl font-cute text-gray-700">lovelist</h2>
-                            <p class="text-xs text-gray-400">my precious things...</p>
-                        </div>
-                    </div>
+            .progress-bar-container {
+                flex: 1;
+                height: 4px;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 2px;
+                cursor: pointer;
+                position: relative;
+                transition: height 0.2s ease;
+            }
+            
+            .progress-bar-container:hover {
+                height: 6px;
+            }
 
-                    <div class="space-y-4 overflow-y-auto custom-scroll pr-2 pb-2 flex-1">
-                        <div class="bg-pink-50/70 p-4 rounded-2xl border border-pink-100">
-                            <h3 class="text-sm font-bold text-pink-500 mb-2 flex items-center gap-2"><i data-lucide="heart" class="w-4 h-4 fill-pink-300 text-pink-300"></i> Likes</h3>
-                            <div class="flex flex-wrap gap-2 text-xs text-gray-600">
-                                <span class="px-2 py-1 bg-white rounded-full shadow-sm border border-pink-50">🦈 Sharks</span>
-                                <span class="px-2 py-1 bg-white rounded-full shadow-sm border border-pink-50">📚 Classic Literature</span>
-                                <span class="px-2 py-1 bg-white rounded-full shadow-sm border border-pink-50">🎨 Drawing</span>
-                                <span class="px-2 py-1 bg-white rounded-full shadow-sm border border-pink-50">🧠 Psychological Anime</span>
-                                <span class="px-2 py-1 bg-white rounded-full shadow-sm border border-pink-50">🌶️ Spicy Foods</span>
-                            </div>
-                        </div>
+            .progress-fill {
+                position: absolute;
+                left: 0;
+                top: 0;
+                height: 100%;
+                background: #fff;
+                border-radius: 2px;
+                width: 0%;
+                pointer-events: none;
+            }
 
-                         <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                            <h3 class="text-sm font-bold text-gray-500 mb-2 flex items-center gap-2"><i data-lucide="minus-circle" class="w-4 h-4 text-gray-400"></i> Dislikes</h3>
-                            <div class="flex flex-wrap gap-2 text-xs text-gray-600">
-                                <span class="px-2 py-1 bg-white rounded-full shadow-sm border border-gray-100">🔊 Loud Noises</span>
-                                <span class="px-2 py-1 bg-white rounded-full shadow-sm border border-gray-100">😠 Getting Yelled At</span>
-                            </div>
-                         </div>
-                        
-                        <p class="text-[10px] text-gray-400 text-center pt-2">
-                                & all my sweet mutuals ♡
-                        </p>
-                    </div>
-                </div>
-            `,
-            bl: `
-                <div class="fade-enter-active h-full flex flex-col mt-4 md:mt-0">
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="w-12 h-12 rounded-full overflow-hidden shrink-0">
-                            <img src="image07.jpg" class="w-full h-full object-cover" alt="BL/Yaoi Header Image">
-                        </div>
-                        <div>
-                            <h2 class="text-2xl font-cute text-gray-700">BL / Yaoi</h2>
-                            <p class="text-xs text-gray-400">faves I'm reading...</p>
-                        </div>
-                    </div>
+            .progress-thumb {
+                position: absolute;
+                height: 12px;
+                width: 12px;
+                background: #fff;
+                border-radius: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%) scale(0);
+                left: 0%; /* Driven by JS */
+                pointer-events: none;
+                transition: transform 0.2s ease;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            }
 
-                    <div class="space-y-4 overflow-y-auto custom-scroll pr-2 flex-1">
-                        <div class="bg-purple-50/70 p-4 rounded-2xl border border-purple-100">
-                            <h3 class="text-sm font-bold text-purple-500 mb-2 flex items-center gap-1"><i data-lucide="book-open" class="w-4 h-4 text-purple-400"></i> My BL Faves</h3>
-                            <ul class="text-sm text-gray-600 space-y-1 font-medium">
-                                <li class="text-pink-400">Painter of the Night</li>
-                                <li>BJ Alex</li>
-                                <li class="text-pink-400">Roses and Champagne</li>
-                                <li>Minmotion Syndrome</li>
-                                <li class="text-pink-400">Killing Stalking</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            `
-        };
+            .progress-bar-container:hover .progress-thumb {
+                transform: translate(-50%, -50%) scale(1);
+            }
 
-        function switchTab(tabName) {
-            buttons.forEach(btn => {
-                btn.classList.remove('text-pink-300');
-                btn.classList.add('text-gray-300');
+            .player-right {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                position: relative;
+            }
+            
+            .volume-container {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.5rem;
+                border-radius: 2rem;
+                transition: background 0.3s;
+            }
+            
+            .volume-container:hover {
+                background: rgba(255,255,255,0.1);
+            }
 
-                if(btn.id === `btn-${tabName}`) {
-                    btn.classList.remove('text-gray-300');
-                    btn.classList.add('text-pink-300');
+            .volume-btn {
+                background: none;
+                border: none;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                color: #fff;
+                padding: 0;
+            }
+            
+            .volume-btn svg {
+                width: 1.25rem;
+                height: 1.25rem;
+                fill: currentColor;
+            }
+
+            .volume-slider {
+                width: 0;
+                overflow: hidden;
+                transition: width 0.3s ease, opacity 0.3s ease;
+                opacity: 0;
+                -webkit-appearance: none;
+                height: 4px;
+                background: rgba(255,255,255,0.3);
+                border-radius: 2px;
+            }
+            
+            .volume-container:hover .volume-slider {
+                width: 60px;
+                opacity: 1;
+            }
+            
+            .volume-slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background: #fff;
+                cursor: pointer;
+            }
+
+            /* Mobile Adjustments */
+            @media (max-width: 736px) {
+                .modern-player-wrapper {
+                    flex-direction: row; /* Keep row but condense */
+                    padding: 0.75rem 1rem;
+                    gap: 1rem;
                 }
-            });
-
-            const oldContent = contentArea.firstElementChild;
-            if (oldContent) {
-                oldContent.classList.remove('fade-enter-active');
-                oldContent.classList.add('fade-exit-active');
                 
-                setTimeout(() => {
-                    renderContent(tabName);
-                }, 200);
-            } else {
-                renderContent(tabName);
+                .play-pause-btn {
+                    width: 3rem;
+                    height: 3rem;
+                }
+                
+                .track-title {
+                    font-size: 0.8rem;
+                }
+                
+                .track-artist {
+                    font-size: 0.65rem;
+                }
+                
+                /* Hide time on very small screens if needed, or stack */
+                .volume-container:hover .volume-slider {
+                    width: 50px;
+                }
             }
-        }
-
-        function renderContent(tabName) {
-            contentArea.innerHTML = contents[tabName];
-            lucide.createIcons();
             
-            requestAnimationFrame(() => {
-                const newContent = contentArea.firstElementChild;
-                if (newContent) {
-                    newContent.classList.add('fade-enter');
-                    requestAnimationFrame(() => {
-                        newContent.classList.add('fade-enter-active');
-                        newContent.classList.remove('fade-enter');
+            @media (max-width: 480px) {
+                .modern-player-wrapper {
+                   gap: 0.75rem;
+                }
+                .time-display {
+                    font-size: 0.6rem;
+                    min-width: auto;
+                }
+            }
+            /* End Modern Player CSS */
+
+            .icons-component.instance-1 {
+                display: none !important;
+            }
+
+            .table-component {
+                max-width: 100%;
+                -webkit-overflow-scrolling: touch;
+                overflow-x: auto;
+                overflow-y: hidden;
+            }
+
+            .table-component > .inner {
+                display: inline-block;
+                max-width: 100%;
+            }
+
+            .table-component table {
+                direction: var(--site-language-direction);
+                text-align: var(--site-language-alignment);
+                width: 100%;
+            }
+
+            .table-component th {
+                text-align: var(--site-language-alignment);
+            }
+
+            .table-component.instance-1 > .inner {
+                width: 30rem;
+            }
+
+            .table-component.instance-1 th {
+                color: #D4D4D4;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.625em;
+                line-height: 1.125;
+                font-weight: 400;
+            }
+
+            .table-component.instance-1 th a {
+                text-decoration: underline;
+            }
+
+            .table-component.instance-1 th a:hover {
+                text-decoration: none;
+            }
+
+            .table-component.instance-1 td {
+                color: #A3A3A3;
+                font-family: '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+                font-size: 0.625em;
+                line-height: 1.125;
+                font-weight: 400;
+            }
+
+            .table-component.instance-1 td a {
+                text-decoration: underline;
+            }
+
+            .table-component.instance-1 td a:hover {
+                text-decoration: none;
+            }
+
+            .table-component.instance-1 table > thead {
+                background-color: rgba(212,212,212,0.184);
+            }
+
+            .table-component.instance-1 th, .table-component.instance-1 td {
+                border: solid 1px #D4D4D4;
+                padding: 0.25rem 0.34375rem;
+            }
+
+            .text-component {
+                direction: var(--site-language-direction);
+                position: relative;
+            }
+
+            .text-component span.p {
+                display: block;
+                position: relative;
+            }
+
+            .text-component span[style], .text-component strong, .text-component a, .text-component code, .text-component mark, .text-component spoiler-text {
+                -webkit-text-fill-color: currentcolor;
+            }
+
+            .text-component.instance-1 {
+                text-align: right;
+                color: #A3A3A3;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.625em;
+                line-height: 1.125;
+                font-weight: 400;
+            }
+
+            .text-component.instance-1 a {
+                color: #000000;
+                text-decoration: underline;
+            }
+
+            .text-component.instance-1 a:hover {
+                text-decoration: none;
+            }
+
+            .text-component.instance-1 span.p:nth-child(n + 2) {
+                margin-top: 1rem;
+            }
+
+            .text-component.instance-10 {
+                text-align: center;
+                color: #A3A3A3;
+                font-family: 'Shrikhand', serif;
+                font-size: 1.625em;
+                line-height: 1.125;
+                font-weight: 400;
+            }
+
+            .text-component.instance-10 a {
+                color: #000000;
+                text-decoration: underline;
+            }
+
+            .text-component.instance-10 a:hover {
+                text-decoration: none;
+            }
+
+            .text-component.instance-10 span.p:nth-child(n + 2) {
+                margin-top: 1rem;
+            }
+
+            .text-component.instance-11 {
+                text-align: right;
+                color: #A3A3A3;
+                font-family: 'Shrikhand', serif;
+                font-size: 1.125em;
+                line-height: 1.125;
+                font-weight: 400;
+            }
+
+            .text-component.instance-11 a {
+                color: #000000;
+                text-decoration: underline;
+            }
+
+            .text-component.instance-11 a:hover {
+                text-decoration: none;
+            }
+
+            .text-component.instance-11 span.p:nth-child(n + 2) {
+                margin-top: 1rem;
+            }
+
+            .text-component.instance-13 {
+                text-align: right;
+                color: #A3A3A3;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.625em;
+                line-height: 1.125;
+                font-weight: 500;
+            }
+
+            .text-component.instance-13 a {
+                color: #000000;
+                text-decoration: underline;
+            }
+
+            .text-component.instance-13 a:hover {
+                text-decoration: none;
+            }
+
+            .text-component.instance-13 span.p:nth-child(n + 2) {
+                margin-top: 1rem;
+            }
+
+            .text-component.instance-18 {
+                text-align: left;
+                color: #A3A3A3;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.625em;
+                line-height: 1.125;
+                font-weight: 500;
+            }
+
+            .text-component.instance-18 a {
+                color: #000000;
+                text-decoration: underline;
+            }
+
+            .text-component.instance-18 a:hover {
+                text-decoration: none;
+            }
+
+            .text-component.instance-18 span.p:nth-child(n + 2) {
+                margin-top: 1rem;
+            }
+
+            .text-component.instance-15 {
+                text-align: left;
+                color: #A3A3A3;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.625em;
+                line-height: 1.125;
+                font-weight: 500;
+            }
+
+            .text-component.instance-15 a {
+                color: #000000;
+                text-decoration: underline;
+            }
+
+            .text-component.instance-15 a:hover {
+                text-decoration: none;
+            }
+
+            .text-component.instance-15 span.p:nth-child(n + 2) {
+                margin-top: 1rem;
+            }
+
+            .text-component.instance-12 {
+                text-align: left;
+                color: #A3A3A3;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.625em;
+                line-height: 1.125;
+                font-weight: 500;
+            }
+
+            .text-component.instance-12 a {
+                color: #000000;
+                text-decoration: underline;
+            }
+
+            .text-component.instance-12 a:hover {
+                text-decoration: none;
+            }
+
+            .text-component.instance-12 span.p:nth-child(n + 2) {
+                margin-top: 1rem;
+            }
+
+            .text-component.instance-4 {
+                text-align: right;
+                color: #A3A3A3;
+                font-family: 'Shrikhand', serif;
+                text-indent: 1.375rem;
+                font-size: 1.125em;
+                line-height: 1.125;
+                font-weight: 400;
+            }
+
+            .text-component.instance-4 a {
+                color: #000000;
+                text-decoration: underline;
+            }
+
+            .text-component.instance-4 a:hover {
+                text-decoration: none;
+            }
+
+            .text-component.instance-4 span.p:nth-child(n + 2) {
+                margin-top: 1rem;
+            }
+
+            .text-component.instance-9 {
+                text-align: right;
+                color: #A3A3A3;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.625em;
+                line-height: 1.125;
+                font-weight: 500;
+            }
+
+            .text-component.instance-9 a {
+                color: #000000;
+                text-decoration: underline;
+            }
+
+            .text-component.instance-9 a:hover {
+                text-decoration: none;
+            }
+
+            .text-component.instance-9 span.p:nth-child(n + 2) {
+                margin-top: 1rem;
+            }
+
+            .text-component.instance-5 {
+                text-align: center;
+                color: #A3A3A3;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.625em;
+                line-height: 1.125;
+                font-weight: 500;
+            }
+
+            .text-component.instance-5 a {
+                color: #000000;
+                text-decoration: underline;
+            }
+
+            .text-component.instance-5 a:hover {
+                text-decoration: none;
+            }
+
+            .text-component.instance-5 span.p:nth-child(n + 2) {
+                margin-top: 1rem;
+            }
+
+            .text-component.instance-3 {
+                text-align: center;
+                color: #A3A3A3;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.625em;
+                line-height: 1.125;
+                font-weight: 700;
+            }
+
+            .text-component.instance-3 a {
+                color: #000000;
+                text-decoration: underline;
+            }
+
+            .text-component.instance-3 a:hover {
+                text-decoration: none;
+            }
+
+            .text-component.instance-3 span.p:nth-child(n + 2) {
+                margin-top: 1rem;
+            }
+
+            .text-component.instance-2 {
+                text-align: center;
+                color: #A3A3A3;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.625em;
+                line-height: 1.125;
+                font-weight: 500;
+            }
+
+            .text-component.instance-2 a {
+                color: #000000;
+                text-decoration: underline;
+            }
+
+            .text-component.instance-2 a:hover {
+                text-decoration: none;
+            }
+
+            .text-component.instance-2 span.p:nth-child(n + 2) {
+                margin-top: 1rem;
+            }
+
+            .text-component.instance-7 {
+                text-align: center;
+                color: #A3A3A3;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.625em;
+                line-height: 1.125;
+                font-weight: 500;
+            }
+
+            .text-component.instance-7 a {
+                color: #000000;
+                text-decoration: underline;
+            }
+
+            .text-component.instance-7 a:hover {
+                text-decoration: none;
+            }
+
+            .text-component.instance-7 span.p:nth-child(n + 2) {
+                margin-top: 1rem;
+            }
+
+            .text-component.instance-8 {
+                text-align: center;
+                color: #A3A3A3;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.625em;
+                line-height: 1.125;
+                font-weight: 500;
+            }
+
+            .text-component.instance-8 a {
+                color: #000000;
+                text-decoration: underline;
+            }
+
+            .text-component.instance-8 a:hover {
+                text-decoration: none;
+            }
+
+            .text-component.instance-8 span.p:nth-child(n + 2) {
+                margin-top: 1rem;
+            }
+
+            .text-component.instance-6 {
+                text-align: center;
+                color: #A3A3A3;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.625em;
+                line-height: 1.125;
+                font-weight: 500;
+            }
+
+            .text-component.instance-6 a {
+                color: #000000;
+                text-decoration: underline;
+            }
+
+            .text-component.instance-6 a:hover {
+                text-decoration: none;
+            }
+
+            .text-component.instance-6 span.p:nth-child(n + 2) {
+                margin-top: 1rem;
+            }
+
+            .text-component.instance-16 {
+                text-align: right;
+                color: #FFFFFF;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.625em;
+                line-height: 1.125;
+                font-weight: 600;
+            }
+
+            .text-component.instance-16 a {
+                color: #000000;
+                text-decoration: underline;
+            }
+
+            .text-component.instance-16 a:hover {
+                text-decoration: none;
+            }
+
+            .text-component.instance-16 span.p:nth-child(n + 2) {
+                margin-top: 1rem;
+            }
+
+            .image-component {
+                display: block;
+                line-height: 0;
+                max-width: 100%;
+                position: relative;
+            }
+
+            .image-component > .frame {
+                -webkit-backface-visibility: hidden;
+                -webkit-transform: translate3d(0, 0, 0);
+                display: inline-block;
+                max-width: 100%;
+                overflow: hidden;
+                vertical-align: top;
+                width: 100%;
+            }
+
+            .image-component > .frame > img {
+                border-radius: 0 !important;
+                max-width: 100%;
+                vertical-align: top;
+                width: inherit;
+            }
+
+            .image-component.full > .frame {
+                display: block;
+            }
+
+            .image-component.full:first-child > .frame {
+                border-top-left-radius: inherit;
+                border-top-right-radius: inherit;
+            }
+
+            .image-component.full:last-child > .frame {
+                border-bottom-left-radius: inherit;
+                border-bottom-right-radius: inherit;
+            }
+
+            .image-component.instance-2 > .frame {
+                width: 15rem;
+                transition: none;
+            }
+
+            .image-component.instance-2 > .frame > img {
+                transition: none;
+            }
+
+            .image-component.instance-1 {
+                text-align: center;
+            }
+
+            .image-component.instance-1 > .frame {
+                width: 6.75rem;
+                transition: none;
+            }
+
+            .image-component.instance-1 > .frame > img {
+                transition: none;
+            }
+
+            .image-component.instance-4 {
+                text-align: center;
+            }
+
+            .image-component.instance-4 > .frame {
+                width: 3rem;
+                transition: transform 0.75s ease, z-index 0.75s ease;
+            }
+
+            .image-component.instance-4 > .frame:hover {
+                transform: scale(0.8875);
+                z-index: 1;
+            }
+
+            .image-component.instance-5 {
+                text-align: center;
+            }
+
+            .image-component.instance-5 > .frame {
+                width: 3rem;
+                transition: transform 0.75s ease, z-index 0.75s ease;
+            }
+
+            .image-component.instance-5 > .frame:hover {
+                transform: scale(0.9575);
+                z-index: 1;
+            }
+
+            .image-component.instance-3 {
+                text-align: center;
+            }
+
+            .image-component.instance-3 > .frame {
+                width: 3rem;
+                transition: none;
+            }
+
+            .image-component.instance-3 > .frame > img {
+                transition: none;
+            }
+
+            .image-component.instance-7 {
+                text-align: center;
+            }
+
+            .image-component.instance-7 > .frame {
+                width: 20.25rem;
+                transition: transform 0.75s ease, z-index 0.75s ease;
+            }
+
+            .image-component.instance-7 > .frame:hover {
+                transform: scale(0.9575);
+                z-index: 1;
+            }
+
+            .image-component.instance-6 {
+                text-align: center;
+            }
+
+            .image-component.instance-6 > .frame {
+                width: 20.25rem;
+                transition: transform 0.75s ease, z-index 0.75s ease;
+            }
+
+            .image-component.instance-6 > .frame:hover {
+                transform: scale(0.9575);
+                z-index: 1;
+            }
+
+            #header {
+                margin-bottom: 0.5rem !important;
+            }
+
+            #footer {
+                margin-top: 0.5rem !important;
+            }
+
+            .icons-component {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: var(--flex-alignment);
+                letter-spacing: 0;
+                padding: 0;
+            }
+
+            .icons-component > li {
+                position: relative;
+                z-index: 1;
+            }
+
+            .icons-component > li > a {
+                align-items: center;
+                display: flex;
+                justify-content: center;
+            }
+
+            .icons-component > li > a > svg {
+                display: block;
+                pointer-events: none;
+                position: relative;
+            }
+
+            .icons-component > li > a + svg {
+                display: block;
+                height: 100%;
+                left: 0;
+                pointer-events: none;
+                position: absolute;
+                top: 0;
+                width: 100%;
+                z-index: -1;
+            }
+
+            .icons-component > li > a > .label {
+                display: none;
+            }
+
+            .icons-component.instance-1 {
+                font-size: 0.875em;
+                gap: 0.75rem;
+            }
+
+            .icons-component.instance-1 > li > a {
+                border-radius: 100%;
+                height: 2em;
+                width: 2em;
+                background-color: #757373;
+                transition: color 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
+            }
+
+            .icons-component.instance-1 > li > a > svg {
+                height: 60%;
+                width: 60%;
+                fill: #696969;
+                transition: fill 0.25s ease;
+            }
+
+            .icons-component.instance-1 > li > a:hover {
+                background-color: #707070 !important;
+            }
+
+            .icons-component.instance-1 > li > a + svg {
+                transition: fill 0.25s ease, stroke 0.25s ease;
+            }
+
+            .icons-component.instance-1 > li > a.n01 > svg {
+                fill: #FFFFFF;
+            }
+            
+            /* Removing the credits section */
+            #credits {
+                display: none !important;
+            }
+
+            .site-main > .inner > footer > :last-child {
+                margin-bottom: 0.75rem !important;
+            }
+
+            @media (max-width: 1920px) {
+            }
+
+            @media (max-width: 1680px) {
+                html {
+                    font-size: 13pt;
+                }
+            }
+
+            @media (max-width: 1280px) {
+                html {
+                    font-size: 13pt;
+                }
+            }
+
+            @media (max-width: 1024px) {
+            }
+
+            @media (max-width: 980px) {
+                html {
+                    font-size: 11pt;
+                }
+            }
+
+            @media (max-width: 736px) {
+                html {
+                    font-size: 11pt;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .site-main > .inner {
+                    --spacing: 0.65625rem;
+                }
+            }
+
+            @media (max-width: 360px) {
+                /* ... previous media queries ... */
+            }
+        </style>
+    </head>
+    <body class="is-loading">
+        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 40 40" display="none" width="0" height="0">
+            <symbol id="icon-52655f31fd82f82d1c86cb188764da1e" viewBox="0 0 40 40">
+                <path d="M36.1,21.3c1.5-0.7,1.5-1.9,0-2.6L10.5,6.3C9,5.6,7.8,6.2,7.8,7.6l0,24.8c0,1.4,1.2,2,2.7,1.3L36.1,21.3z"/>
+            </symbol>
+        </svg>
+        <div class="site-wrapper">
+            <div class="site-main">
+                <div class="inner">
+                    <header id="header">
+                        <div id="container01" class="container-component instance-1 columns">
+                            <div class="wrapper">
+                                <div class="inner">
+                                    <div>
+                                        <div id="table01" class="table-component instance-1">
+                                            <div class="inner">
+                                                <table>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>✧...lachrymouche.exe</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p id="text01" class="text-component instance-1">♡</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="container02" class="container-component instance-2 columns">
+                            <div class="wrapper">
+                                <div class="inner">
+                                    <div>
+                                        <div id="image01" class="image-component instance-1">
+                                            <span class="frame">
+                                                <img src="assets/images/image01.jpg?v=93d7af8e" alt=""/>
+                                            </span>
+                                        </div>
+                                        <p id="text03" class="text-component instance-3">ϝαɳԃσɱʂ I &#39;ɱ ιɳ</p>
+                                        <p id="text02" class="text-component instance-2">
+                                            <span class="p">
+                                                ηєση gєηєѕιѕ єναηgєℓιση<br/>
+                                                нαιвαηє яєηмєι<br/>gєηѕнιη ιмρα¢т
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <h1 id="text10" class="text-component instance-10">yuri !</h1>
+                                        <p id="text05" class="text-component instance-5">༘⋆𓂃уυяι┆ѕнє/нєя┆6тєєη┆ƒιℓιριησ┆ραηѕєχυαℓ⋮⪩. .⪨༝</p>
+                                        <div id="image02" class="image-component instance-2">
+                                            <span class="frame">
+                                                <img src="assets/images/image02.jpg?v=93d7af8e" alt=""/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div id="image04" class="image-component instance-4">
+                                            <a href="#rules" class="frame">
+                                                <img src="assets/images/image04.jpg?v=93d7af8e" alt=""/>
+                                            </a>
+                                        </div>
+                                        <p id="text07" class="text-component instance-7">
+                                            <a href="#rules">rules</a>
+                                        </p>
+                                        <div id="image05" class="image-component instance-5">
+                                            <a href="#lovelist" class="frame">
+                                                <img src="assets/images/image05.jpg?v=93d7af8e" alt=""/>
+                                            </a>
+                                        </div>
+                                        <p id="text08" class="text-component instance-8">
+                                            <a href="#lovelist">lovelist</a>
+                                        </p>
+                                        <div id="image03" class="image-component instance-3">
+                                            <a href="#" class="frame">
+                                                <img src="assets/images/image03.jpg?v=93d7af8e" alt=""/>
+                                            </a>
+                                        </div>
+                                        <p id="text06" class="text-component instance-6">
+                                            <a href="#">close</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </header>
+                    <section id="dontdelete-section"></section>
+                    <section id="rules-section">
+                        <div id="container03" class="container-component instance-3 columns">
+                            <div class="wrapper">
+                                <div class="inner">
+                                    <div>
+                                        <div id="image07" class="image-component instance-7">
+                                            <a href="#lovelist" class="frame">
+                                                <img src="assets/images/image07.jpg?v=93d7af8e" alt=""/>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h2 id="text11" class="text-component instance-11">before you interact</h2>
+                                        <p id="text13" class="text-component instance-13">i &#39;m annoying and get attached easily</p>
+                                        <h2 id="text04" class="text-component instance-4">do not interact</h2>
+                                        <p id="text09" class="text-component instance-9">
+                                            <span class="p">
+                                                basic dni criteria<br/>if you &#39;re here to use me, gtfo
+                                            </span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <section id="lovelist-section">
+                        <div id="container04" class="container-component instance-4 columns">
+                            <div class="wrapper">
+                                <div class="inner">
+                                    <div>
+                                        <p id="text18" class="text-component instance-18">
+                                            <strong>likes</strong>
+                                            sharks, classic literatures, drawing, psychological anime, spicy foods
+                                        </p>
+                                        <p id="text15" class="text-component instance-15">
+                                            <strong>dislikes</strong>
+                                            loud noises, getting yelled at
+                                        </p>
+                                        <p id="text12" class="text-component instance-12">
+                                            <strong>bl/yaoi</strong>
+                                            painter of the night, bj alex, roses and champagne, minmotion syndrome, killing stalking
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <div id="image06" class="image-component instance-6">
+                                            <a href="#lovelist" class="frame">
+                                                <img src="assets/images/image06.jpg?v=93d7af8e" alt=""/>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    <footer id="footer">
+                         <!-- Switched from 'columns' to 'default' for full width player control -->
+                        <div id="container05" class="container-component instance-5 default">
+                            <div class="wrapper">
+                                <div class="inner">
+                                    <div class="modern-player-wrapper">
+                                        <audio id="audio-track" src="assets/audio/NoOneNoticed.mp3"></audio>
+                                        
+                                        <!-- Play/Pause -->
+                                        <div class="player-left">
+                                            <button id="play-pause-btn" class="play-pause-btn">
+                                                 <!-- Play Icon -->
+                                                <svg id="play-icon" viewBox="0 0 24 24" style="display: block;">
+                                                    <path d="M8 5v14l11-7z"/>
+                                                </svg>
+                                                <!-- Pause Icon -->
+                                                <svg id="pause-icon" viewBox="0 0 24 24" style="display: none;">
+                                                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+
+                                        <!-- Info & Progress -->
+                                        <div class="player-center">
+                                            <div class="track-details">
+                                                <span class="track-title">No One Noticed</span>
+                                                <span class="track-artist">The Marias</span>
+                                            </div>
+                                            <div class="progress-area">
+                                                <span id="current-time" class="time-display">0:00</span>
+                                                <div id="progress-container" class="progress-bar-container">
+                                                    <div id="progress-fill" class="progress-fill"></div>
+                                                    <div id="progress-thumb" class="progress-thumb"></div>
+                                                </div>
+                                                <span id="duration" class="time-display">0:00</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Volume -->
+                                        <div class="player-right">
+                                            <div class="volume-container">
+                                                <button id="mute-btn" class="volume-btn">
+                                                    <svg viewBox="0 0 24 24">
+                                                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                                                    </svg>
+                                                </button>
+                                                <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" value="100">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            </div>
+        </div>
+        <script>
+            // Modern Music Player Logic
+            document.addEventListener('DOMContentLoaded', function() {
+                const audio = document.getElementById('audio-track');
+                const playPauseBtn = document.getElementById('play-pause-btn');
+                const playIcon = document.getElementById('play-icon');
+                const pauseIcon = document.getElementById('pause-icon');
+                const progressContainer = document.getElementById('progress-container');
+                const progressFill = document.getElementById('progress-fill');
+                const progressThumb = document.getElementById('progress-thumb');
+                const currentTimeEl = document.getElementById('current-time');
+                const durationEl = document.getElementById('duration');
+                const volumeSlider = document.getElementById('volume-slider');
+                const muteBtn = document.getElementById('mute-btn');
+                
+                let isDragging = false;
+
+                // Helper: Format time (seconds -> mm:ss)
+                function formatTime(seconds) {
+                    if (isNaN(seconds)) return "0:00";
+                    const mins = Math.floor(seconds / 60);
+                    const secs = Math.floor(seconds % 60);
+                    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+                }
+
+                // Update Duration once metadata loads
+                audio.addEventListener('loadedmetadata', function() {
+                    durationEl.textContent = formatTime(audio.duration);
+                });
+
+                // Play/Pause Toggle
+                playPauseBtn.addEventListener('click', function() {
+                    if (audio.paused) {
+                        audio.play();
+                        playIcon.style.display = 'none';
+                        pauseIcon.style.display = 'block';
+                    } else {
+                        audio.pause();
+                        playIcon.style.display = 'block';
+                        pauseIcon.style.display = 'none';
+                    }
+                });
+
+                // Time Update & Progress Bar
+                audio.addEventListener('timeupdate', function() {
+                    if (!isDragging) {
+                        const percent = (audio.currentTime / audio.duration) * 100;
+                        if(percent) {
+                            progressFill.style.width = `${percent}%`;
+                            progressThumb.style.left = `${percent}%`;
+                            currentTimeEl.textContent = formatTime(audio.currentTime);
+                        }
+                    }
+                });
+
+                // Click to Seek
+                progressContainer.addEventListener('click', function(e) {
+                    const rect = progressContainer.getBoundingClientRect();
+                    const clickX = e.clientX - rect.left;
+                    const width = rect.width;
+                    const percent = (clickX / width);
+                    audio.currentTime = percent * audio.duration;
+                });
+
+                // Dragging functionality
+                function updateDrag(e) {
+                    const rect = progressContainer.getBoundingClientRect();
+                    // Handle touch or mouse coordinates
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    
+                    let clickX = clientX - rect.left;
+                    
+                    // Clamp values
+                    if (clickX < 0) clickX = 0;
+                    if (clickX > rect.width) clickX = rect.width;
+                    
+                    const percent = (clickX / rect.width) * 100;
+                    
+                    progressFill.style.width = `${percent}%`;
+                    progressThumb.style.left = `${percent}%`;
+                    
+                    // Visual time update while dragging
+                    const dragTime = (percent / 100) * audio.duration;
+                    currentTimeEl.textContent = formatTime(dragTime);
+                }
+
+                progressContainer.addEventListener('mousedown', function(e) {
+                    isDragging = true;
+                    updateDrag(e);
+                });
+                
+                progressContainer.addEventListener('touchstart', function(e) {
+                    isDragging = true;
+                    updateDrag(e);
+                }, {passive: false});
+
+                document.addEventListener('mousemove', function(e) {
+                    if (isDragging) {
+                        updateDrag(e);
+                    }
+                });
+                
+                document.addEventListener('touchmove', function(e) {
+                    if (isDragging) {
+                        e.preventDefault(); // prevent scrolling while scrubbing
+                        updateDrag(e);
+                    }
+                }, {passive: false});
+
+                document.addEventListener('mouseup', function(e) {
+                    if (isDragging) {
+                        const rect = progressContainer.getBoundingClientRect();
+                        const clientX = e.clientX; // Mouse up usually has coordinates
+                        // Recalculate final position to be safe, or use current width
+                        const widthStr = progressFill.style.width; 
+                        const percent = parseFloat(widthStr);
+                        
+                        if(!isNaN(percent)) {
+                             audio.currentTime = (percent / 100) * audio.duration;
+                        }
+                        isDragging = false;
+                    }
+                });
+                
+                document.addEventListener('touchend', function(e) {
+                    if (isDragging) {
+                        // For touch end, we rely on the last known position set in touchmove
+                         const widthStr = progressFill.style.width; 
+                         const percent = parseFloat(widthStr);
+                         if(!isNaN(percent)) {
+                              audio.currentTime = (percent / 100) * audio.duration;
+                         }
+                         isDragging = false;
+                    }
+                });
+
+                // Volume Control
+                volumeSlider.addEventListener('input', function() {
+                    audio.volume = this.value / 100;
+                });
+
+                muteBtn.addEventListener('click', function() {
+                    if (audio.muted) {
+                        audio.muted = false;
+                        volumeSlider.value = audio.volume * 100;
+                        muteBtn.style.opacity = '1';
+                    } else {
+                        audio.muted = true;
+                        volumeSlider.value = 0;
+                        muteBtn.style.opacity = '0.5';
+                    }
+                });
+                
+                // Reset on End
+                audio.addEventListener('ended', function() {
+                     playIcon.style.display = 'block';
+                     pauseIcon.style.display = 'none';
+                     progressFill.style.width = '0%';
+                     progressThumb.style.left = '0%';
+                     currentTimeEl.textContent = "0:00";
+                });
+            });
+        </script>
+        <script>
+            (function() {
+                var on = addEventListener
+                  , off = removeEventListener
+                  , $ = function(q) {
+                    return document.querySelector(q)
+                }
+                  , $$ = function(q) {
+                    return document.querySelectorAll(q)
+                }
+                  , $body = document.body
+                  , $inner = $('.inner')
+                  , client = (function() {
+                    var o = {
+                        browser: 'other',
+                        browserVersion: 0,
+                        os: 'other',
+                        osVersion: 0,
+                        mobile: false,
+                        canUse: null,
+                        flags: {
+                            lsdUnits: false,
+                        },
+                    }, ua = navigator.userAgent, a, i;
+                    a = [['firefox', /Firefox\/([0-9\.]+)/, null], ['edge', /Edge\/([0-9\.]+)/, null], ['safari', /Version\/([0-9\.]+).+Safari/, null], ['chrome', /Chrome\/([0-9\.]+)/, null], ['chrome', /CriOS\/([0-9\.]+)/, null], ['ie', /Trident\/.+rv:([0-9]+)/, null], ['safari', /iPhone OS ([0-9_]+)/, function(v) {
+                        return v.replace('_', '.').replace('_', '');
+                    }
+                    ]];
+                    for (i = 0; i < a.length; i++) {
+                        if (ua.match(a[i][1])) {
+                            o.browser = a[i][0];
+                            o.browserVersion = parseFloat(a[i][2] ? (a[i][2])(RegExp.$1) : RegExp.$1);
+                            break;
+                        }
+                    }
+                    a = [['ios', /([0-9_]+) like Mac OS X/, function(v) {
+                        return v.replace('_', '.').replace('_', '');
+                    }
+                    ], ['ios', /CPU like Mac OS X/, function(v) {
+                        return 0
+                    }
+                    ], ['ios', /iPad; CPU/, function(v) {
+                        return 0
+                    }
+                    ], ['android', /Android ([0-9\.]+)/, null], ['mac', /Macintosh.+Mac OS X ([0-9_]+)/, function(v) {
+                        return v.replace('_', '.').replace('_', '');
+                    }
+                    ], ['windows', /Windows NT ([0-9\.]+)/, null], ['undefined', /Undefined/, null]];
+                    for (i = 0; i < a.length; i++) {
+                        if (ua.match(a[i][1])) {
+                            o.os = a[i][0];
+                            o.osVersion = parseFloat(a[i][2] ? (a[i][2])(RegExp.$1) : RegExp.$1);
+                            break;
+                        }
+                    }
+                    if (o.os == 'mac' && ('ontouchstart'in window) && ((screen.width == 1024 && screen.height == 1366) || (screen.width == 834 && screen.height == 1112) || (screen.width == 810 && screen.height == 1080) || (screen.width == 768 && screen.height == 1024)))
+                        o.os = 'ios';
+                    o.mobile = (o.os == 'android' || o.os == 'ios');
+                    var _canUse = document.createElement('div');
+                    o.canUse = function(property, value) {
+                        var style;
+                        style = _canUse.style;
+                        if (!(property in style))
+                            return false;
+                        if (typeof value !== 'undefined') {
+                            style[property] = value;
+                            if (style[property] == '')
+                                return false;
+                        }
+                        return true;
+                    }
+                    ;
+                    o.flags.lsdUnits = o.canUse('width', '100dvw');
+                    return o;
+                }())
+                  , ready = {
+                    list: [],
+                    add: function(f) {
+                        this.list.push(f);
+                    },
+                    run: function() {
+                        this.list.forEach( (f) => {
+                            f();
+                        }
+                        );
+                    },
+                }
+                  , trigger = function(t) {
+                    dispatchEvent(new Event(t));
+                }
+                  , cssRules = function(selectorText) {
+                    var ss = document.styleSheets, a = [], f = function(s) {
+                        var r = s.cssRules, i;
+                        for (i = 0; i < r.length; i++) {
+                            if (r[i]instanceof CSSMediaRule && matchMedia(r[i].conditionText).matches)
+                                (f)(r[i]);
+                            else if (r[i]instanceof CSSStyleRule && r[i].selectorText == selectorText)
+                                a.push(r[i]);
+                        }
+                    }, x, i;
+                    for (i = 0; i < ss.length; i++)
+                        f(ss[i]);
+                    return a;
+                }
+                  , escapeHtml = function(s) {
+                    if (s === '' || s === null || s === undefined)
+                        return '';
+                    var a = {
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#39;',
+                    };
+                    s = s.replace(/[&<>"']/g, function(x) {
+                        return a[x];
+                    });
+                    return s;
+                }
+                  , thisHash = function() {
+                    var h = location.hash ? location.hash.substring(1) : null, a;
+                    if (!h)
+                        return null;
+                    if (h.match(/\?/)) {
+                        a = h.split('?');
+                        h = a[0];
+                        history.replaceState(undefined, undefined, '#' + h);
+                        window.location.search = a[1];
+                    }
+                    if (h.length > 0 && !h.match(/^[a-zA-Z]/))
+                        h = 'x' + h;
+                    if (typeof h == 'string')
+                        h = h.toLowerCase();
+                    return h;
+                }
+                  , scrollToElement = function(e, style, duration) {
+                    var y, cy, dy, start, easing, offset, f;
+                    if (!e)
+                        y = 0;
+                    else {
+                        offset = (e.dataset.scrollOffset ? parseInt(e.dataset.scrollOffset) : 0) * parseFloat(getComputedStyle(document.documentElement).fontSize);
+                        switch (e.dataset.scrollBehavior ? e.dataset.scrollBehavior : 'default') {
+                        case 'default':
+                        default:
+                            y = e.offsetTop + offset;
+                            break;
+                        case 'center':
+                            if (e.offsetHeight < window.innerHeight)
+                                y = e.offsetTop - ((window.innerHeight - e.offsetHeight) / 2) + offset;
+                            else
+                                y = e.offsetTop - offset;
+                            break;
+                        case 'previous':
+                            if (e.previousElementSibling)
+                                y = e.previousElementSibling.offsetTop + e.previousElementSibling.offsetHeight + offset;
+                            else
+                                y = e.offsetTop + offset;
+                            break;
+                        }
+                    }
+                    if (!style)
+                        style = 'smooth';
+                    if (!duration)
+                        duration = 750;
+                    if (style == 'instant') {
+                        window.scrollTo(0, y);
+                        return;
+                    }
+                    start = Date.now();
+                    cy = window.scrollY;
+                    dy = y - cy;
+                    switch (style) {
+                    case 'linear':
+                        easing = function(t) {
+                            return t
+                        }
+                        ;
+                        break;
+                    case 'smooth':
+                        easing = function(t) {
+                            return t < .5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1
+                        }
+                        ;
+                        break;
+                    }
+                    f = function() {
+                        var t = Date.now() - start;
+                        if (t >= duration)
+                            window.scroll(0, y);
+                        else {
+                            window.scroll(0, cy + (dy * easing(t / duration)));
+                            requestAnimationFrame(f);
+                        }
+                    }
+                    ;
+                    f();
+                }
+                  , scrollToTop = function() {
+                    scrollToElement(null);
+                }
+                  , loadElements = function(parent) {
+                    var a, e, x, i;
+                    $body.dispatchEvent(new CustomEvent('startComponents',{
+                        detail: {
+                            parent: parent
+                        }
+                    }));
+                    a = parent.querySelectorAll('iframe[data-src]:not([data-src=""])');
+                    for (i = 0; i < a.length; i++) {
+                        a[i].contentWindow.location.replace(a[i].dataset.src);
+                        a[i].dataset.initialSrc = a[i].dataset.src;
+                        a[i].dataset.src = '';
+                    }
+                    a = parent.querySelectorAll('video[autoplay]');
+                    for (i = 0; i < a.length; i++) {
+                        if (a[i].paused)
+                            a[i].play();
+                    }
+                    e = parent.querySelector('[data-autofocus="1"]');
+                    x = e ? e.tagName : null;
+                    switch (x) {
+                    case 'FORM':
+                        e = e.querySelector('.field input, .field select, .field textarea');
+                        if (e)
+                            e.focus();
+                        break;
+                    default:
+                        break;
+                    }
+                    a = parent.querySelectorAll('unloaded-script');
+                    for (i = 0; i < a.length; i++) {
+                        x = document.createElement('script');
+                        x.setAttribute('data-loaded', '');
+                        if (a[i].getAttribute('src'))
+                            x.setAttribute('src', a[i].getAttribute('src'));
+                        if (a[i].textContent)
+                            x.textContent = a[i].textContent;
+                        a[i].replaceWith(x);
+                    }
+                    x = new Event('loadelements');
+                    a = parent.querySelectorAll('[data-unloaded]');
+                    a.forEach( (element) => {
+                        element.removeAttribute('data-unloaded');
+                        element.dispatchEvent(x);
+                    }
+                    );
+                }
+                  , unloadElements = function(parent) {
+                    var a, e, x, i;
+                    $body.dispatchEvent(new CustomEvent('stopComponents',{
+                        detail: {
+                            parent: parent
+                        }
+                    }));
+                    a = parent.querySelectorAll('iframe[data-src=""]');
+                    for (i = 0; i < a.length; i++) {
+                        if (a[i].dataset.srcUnload === '0')
+                            continue;
+                        if ('initialSrc'in a[i].dataset)
+                            a[i].dataset.src = a[i].dataset.initialSrc;
+                        else
+                            a[i].dataset.src = a[i].src;
+                        a[i].contentWindow.location.replace('about:blank');
+                    }
+                    a = parent.querySelectorAll('video');
+                    for (i = 0; i < a.length; i++) {
+                        if (!a[i].paused)
+                            a[i].pause();
+                    }
+                    e = $(':focus');
+                    if (e)
+                        e.blur();
+                };
+                window._scrollToTop = scrollToTop;
+                var thisUrl = function() {
+                    return window.location.href.replace(window.location.search, '').replace(/#$/, '');
+                };
+                var getVar = function(name) {
+                    var a = window.location.search.substring(1).split('&'), b, k;
+                    for (k in a) {
+                        b = a[k].split('=');
+                        if (b[0] == name)
+                            return b[1];
+                    }
+                    return null;
+                };
+                var errors = {
+                    handle: function(handler) {
+                        window.onerror = function(message, url, line, column, error) {
+                            (handler)(error.message);
+                            return true;
+                        }
+                        ;
+                    },
+                    unhandle: function() {
+                        window.onerror = null;
+                    }
+                };
+                var loadHandler = function() {
+                    setTimeout(function() {
+                        $body.classList.remove('is-loading');
+                        $body.classList.add('is-playing');
+                        setTimeout(function() {
+                            $body.classList.remove('is-playing');
+                            $body.classList.add('is-ready');
+                        }, 1000);
+                    }, 100);
+                };
+                on('load', loadHandler);
+                (function() {
+                    var initialSection, initialScrollPoint, initialId, header, footer, name, hideHeader, hideFooter, disableAutoScroll, h, e, ee, k, locked = false, title = document.title, scrollPointParent = function(target) {
+                        while (target) {
+                            if (target.parentElement && target.parentElement.tagName == 'SECTION')
+                                break;
+                            target = target.parentElement;
+                        }
+                        return target;
+                    }, scrollPointSpeed = function(scrollPoint) {
+                        let x = parseInt(scrollPoint.dataset.scrollSpeed);
+                        switch (x) {
+                        case 5:
+                            return 250;
+                        case 4:
+                            return 500;
+                        case 3:
+                            return 750;
+                        case 2:
+                            return 1000;
+                        case 1:
+                            return 1250;
+                        default:
+                            break;
+                        }
+                        return 750;
+                    }, doNextScrollPoint = function(event) {
+                        var e, target, id;
+                        e = scrollPointParent(event.target);
+                        if (!e)
+                            return;
+                        while (e && e.nextElementSibling) {
+                            e = e.nextElementSibling;
+                            if (e.dataset.scrollId) {
+                                target = e;
+                                id = e.dataset.scrollId;
+                                break;
+                            }
+                        }
+                        if (!target || !id)
+                            return;
+                        if (target.dataset.scrollInvisible == '1')
+                            scrollToElement(target, 'smooth', scrollPointSpeed(target));
+                        else
+                            location.href = '#' + id;
+                    }, doPreviousScrollPoint = function(e) {
+                        var e, target, id;
+                        e = scrollPointParent(event.target);
+                        if (!e)
+                            return;
+                        while (e && e.previousElementSibling) {
+                            e = e.previousElementSibling;
+                            if (e.dataset.scrollId) {
+                                target = e;
+                                id = e.dataset.scrollId;
+                                break;
+                            }
+                        }
+                        if (!target || !id)
+                            return;
+                        if (target.dataset.scrollInvisible == '1')
+                            scrollToElement(target, 'smooth', scrollPointSpeed(target));
+                        else
+                            location.href = '#' + id;
+                    }, doFirstScrollPoint = function(e) {
+                        var e, target, id;
+                        e = scrollPointParent(event.target);
+                        if (!e)
+                            return;
+                        while (e && e.previousElementSibling) {
+                            e = e.previousElementSibling;
+                            if (e.dataset.scrollId) {
+                                target = e;
+                                id = e.dataset.scrollId;
+                            }
+                        }
+                        if (!target || !id)
+                            return;
+                        if (target.dataset.scrollInvisible == '1')
+                            scrollToElement(target, 'smooth', scrollPointSpeed(target));
+                        else
+                            location.href = '#' + id;
+                    }, doLastScrollPoint = function(e) {
+                        var e, target, id;
+                        e = scrollPointParent(event.target);
+                        if (!e)
+                            return;
+                        while (e && e.nextElementSibling) {
+                            e = e.nextElementSibling;
+                            if (e.dataset.scrollId) {
+                                target = e;
+                                id = e.dataset.scrollId;
+                            }
+                        }
+                        if (!target || !id)
+                            return;
+                        if (target.dataset.scrollInvisible == '1')
+                            scrollToElement(target, 'smooth', scrollPointSpeed(target));
+                        else
+                            location.href = '#' + id;
+                    }, doNextSection = function() {
+                        var section;
+                        section = $('.site-main > .inner > section.active').nextElementSibling;
+                        if (!section || section.tagName != 'SECTION')
+                            return;
+                        location.href = '#' + section.id.replace(/-section$/, '');
+                    }, doPreviousSection = function() {
+                        var section;
+                        section = $('.site-main > .inner > section.active').previousElementSibling;
+                        if (!section || section.tagName != 'SECTION')
+                            return;
+                        location.href = '#' + (section.matches(':first-child') ? '' : section.id.replace(/-section$/, ''));
+                    }, doFirstSection = function() {
+                        var section;
+                        section = $('.site-main > .inner > section:first-of-type');
+                        if (!section || section.tagName != 'SECTION')
+                            return;
+                        location.href = '#' + section.id.replace(/-section$/, '');
+                    }, doLastSection = function() {
+                        var section;
+                        section = $('.site-main > .inner > section:last-of-type');
+                        if (!section || section.tagName != 'SECTION')
+                            return;
+                        location.href = '#' + section.id.replace(/-section$/, '');
+                    }, resetSectionChangeElements = function(section) {
+                        var ee, e, x;
+                        ee = section.querySelectorAll('[data-reset-on-section-change="1"]');
+                        for (e of ee) {
+                            x = e ? e.tagName : null;
+                            switch (x) {
+                            case 'FORM':
+                                e.reset();
+                                break;
+                            default:
+                                break;
+                            }
+                        }
+                    }, activateSection = function(section, scrollPoint) {
+                        var sectionHeight, currentSection, currentSectionHeight, name, hideHeader, hideFooter, disableAutoScroll, ee, k;
+                        if (!section.classList.contains('inactive')) {
+                            name = (section ? section.id.replace(/-section$/, '') : null);
+                            disableAutoScroll = name ? ((name in sections) && ('disableAutoScroll'in sections[name]) && sections[name].disableAutoScroll) : false;
+                            if (scrollPoint)
+                                scrollToElement(scrollPoint, 'smooth', scrollPointSpeed(scrollPoint));
+                            else if (!disableAutoScroll)
+                                scrollToElement(null);
+                            return false;
+                        } else {
+                            locked = true;
+                            if (location.hash == '#dontdelete')
+                                history.replaceState(null, null, '#');
+                            name = (section ? section.id.replace(/-section$/, '') : null);
+                            hideHeader = name ? ((name in sections) && ('hideHeader'in sections[name]) && sections[name].hideHeader) : false;
+                            hideFooter = name ? ((name in sections) && ('hideFooter'in sections[name]) && sections[name].hideFooter) : false;
+                            disableAutoScroll = name ? ((name in sections) && ('disableAutoScroll'in sections[name]) && sections[name].disableAutoScroll) : false;
+                            if (header && hideHeader) {
+                                header.classList.add('hidden');
+                                setTimeout(function() {
+                                    header.style.display = 'none';
+                                }, 250);
+                            }
+                            if (footer && hideFooter) {
+                                footer.classList.add('hidden');
+                                footer.style.display = 'none';
+                            }
+                            currentSection = $('.site-main > .inner > section:not(.inactive)');
+                            if (currentSection) {
+                                currentSectionHeight = currentSection.offsetHeight;
+                                currentSection.classList.add('inactive');
+                                document.title = title;
+                                unloadElements(currentSection);
+                                resetSectionChangeElements(currentSection);
+                                clearTimeout(window._sectionTimeoutId);
+                                setTimeout(function() {
+                                    currentSection.style.display = 'none';
+                                    currentSection.classList.remove('active');
+                                }, 250);
+                            }
+                            if (section.dataset.title)
+                                document.title = section.dataset.title + ' - ' + title;
+                            setTimeout(function() {
+                                if (header && !hideHeader) {
+                                    header.style.display = '';
+                                    setTimeout(function() {
+                                        header.classList.remove('hidden');
+                                    }, 0);
+                                }
+                                if (footer && !hideFooter) {
+                                    footer.style.display = '';
+                                    setTimeout(function() {
+                                        footer.classList.remove('hidden');
+                                    }, 0);
+                                }
+                                section.style.display = '';
+                                trigger('resize');
+                                if (!disableAutoScroll)
+                                    scrollToElement(null, 'instant');
+                                sectionHeight = section.offsetHeight;
+                                if (sectionHeight > currentSectionHeight) {
+                                    section.style.maxHeight = currentSectionHeight + 'px';
+                                    section.style.minHeight = '0';
+                                } else {
+                                    section.style.maxHeight = '';
+                                    section.style.minHeight = currentSectionHeight + 'px';
+                                }
+                                setTimeout(function() {
+                                    section.classList.remove('inactive');
+                                    section.classList.add('active');
+                                    section.style.minHeight = sectionHeight + 'px';
+                                    section.style.maxHeight = sectionHeight + 'px';
+                                    setTimeout(function() {
+                                        section.style.transition = 'none';
+                                        section.style.minHeight = '';
+                                        section.style.maxHeight = '';
+                                        loadElements(section);
+                                        if (scrollPoint)
+                                            scrollToElement(scrollPoint, 'instant');
+                                        setTimeout(function() {
+                                            section.style.transition = '';
+                                            locked = false;
+                                        }, 75);
+                                    }, 500 + 250);
+                                }, 75);
+                            }, 250);
+                        }
+                    }, sections = {};
+                    window._nextScrollPoint = doNextScrollPoint;
+                    window._previousScrollPoint = doPreviousScrollPoint;
+                    window._firstScrollPoint = doFirstScrollPoint;
+                    window._lastScrollPoint = doLastScrollPoint;
+                    window._nextSection = doNextSection;
+                    window._previousSection = doPreviousSection;
+                    window._firstSection = doFirstSection;
+                    window._lastSection = doLastSection;
+                    window._scrollToTop = function() {
+                        var section, id;
+                        scrollToElement(null);
+                        if (!!(section = $('section.active'))) {
+                            id = section.id.replace(/-section$/, '');
+                            if (id == 'dontdelete')
+                                id = '';
+                            history.pushState(null, null, '#' + id);
+                        }
+                    }
+                    ;
+                    if ('scrollRestoration'in history)
+                        history.scrollRestoration = 'manual';
+                    header = $('#header');
+                    footer = $('#footer');
+                    h = thisHash();
+                    if (h && !h.match(/^[a-zA-Z0-9\-]+$/))
+                        h = null;
+                    if (e = $('[data-scroll-id="' + h + '"]')) {
+                        initialScrollPoint = e;
+                        initialSection = initialScrollPoint.parentElement;
+                        initialId = initialSection.id;
+                    } else if (e = $('#' + (h ? h : 'dontdelete') + '-section')) {
+                        initialScrollPoint = null;
+                        initialSection = e;
+                        initialId = initialSection.id;
+                    }
+                    if (!initialSection) {
+                        initialScrollPoint = null;
+                        initialSection = $('#' + 'dontdelete' + '-section');
+                        initialId = initialSection.id;
+                        history.replaceState(undefined, undefined, '#');
+                    }
+                    name = (h ? h : 'dontdelete');
+                    hideHeader = name ? ((name in sections) && ('hideHeader'in sections[name]) && sections[name].hideHeader) : false;
+                    hideFooter = name ? ((name in sections) && ('hideFooter'in sections[name]) && sections[name].hideFooter) : false;
+                    disableAutoScroll = name ? ((name in sections) && ('disableAutoScroll'in sections[name]) && sections[name].disableAutoScroll) : false;
+                    if (header && hideHeader) {
+                        header.classList.add('hidden');
+                        header.style.display = 'none';
+                    }
+                    if (footer && hideFooter) {
+                        footer.classList.add('hidden');
+                        footer.style.display = 'none';
+                    }
+                    ee = $$('.site-main > .inner > section:not([id="' + initialId + '"])');
+                    for (k = 0; k < ee.length; k++) {
+                        ee[k].className = 'inactive';
+                        ee[k].style.display = 'none';
+                    }
+                    initialSection.classList.add('active');
+                    ready.add( () => {
+                        if (initialSection.dataset.title)
+                            document.title = initialSection.dataset.title + ' - ' + title;
+                        loadElements(initialSection);
+                        if (header)
+                            loadElements(header);
+                        if (footer)
+                            loadElements(footer);
+                        if (!disableAutoScroll)
+                            scrollToElement(null, 'instant');
+                    }
+                    );
+                    on('load', function() {
+                        if (initialScrollPoint)
+                            scrollToElement(initialScrollPoint, 'instant');
+                    });
+                    on('hashchange', function(event) {
+                        var section, scrollPoint, h, e;
+                        if (locked)
+                            return false;
+                        h = thisHash();
+                        if (h && !h.match(/^[a-zA-Z0-9\-]+$/))
+                            return false;
+                        if (e = $('[data-scroll-id="' + h + '"]')) {
+                            scrollPoint = e;
+                            section = scrollPoint.parentElement;
+                        } else if (e = $('#' + (h ? h : 'dontdelete') + '-section')) {
+                            scrollPoint = null;
+                            section = e;
+                        } else {
+                            scrollPoint = null;
+                            section = $('#' + 'dontdelete' + '-section');
+                            history.replaceState(undefined, undefined, '#');
+                        }
+                        if (!section)
+                            return false;
+                        activateSection(section, scrollPoint);
+                        return false;
+                    });
+                    on('click', function(event) {
+                        var t = event.target, tagName = t.tagName.toUpperCase(), scrollPoint, section;
+                        switch (tagName) {
+                        case 'IMG':
+                        case 'SVG':
+                        case 'USE':
+                        case 'U':
+                        case 'STRONG':
+                        case 'EM':
+                        case 'CODE':
+                        case 'S':
+                        case 'MARK':
+                        case 'SPAN':
+                            while (!!(t = t.parentElement))
+                                if (t.tagName == 'A')
+                                    break;
+                            if (!t)
+                                return;
+                            break;
+                        default:
+                            break;
+                        }
+                        if (t.tagName == 'A' && t.getAttribute('href') !== null && t.getAttribute('href').substr(0, 1) == '#') {
+                            if (!!(scrollPoint = $('[data-scroll-id="' + t.hash.substr(1) + '"][data-scroll-invisible="1"]'))) {
+                                event.preventDefault();
+                                section = scrollPoint.parentElement;
+                                if (section.classList.contains('inactive')) {
+                                    history.pushState(null, null, '#' + section.id.replace(/-section$/, ''));
+                                    activateSection(section, scrollPoint);
+                                } else {
+                                    scrollToElement(scrollPoint, 'smooth', scrollPointSpeed(scrollPoint));
+                                }
+                            } else if (t.hash == window.location.hash) {
+                                event.preventDefault();
+                                history.replaceState(undefined, undefined, '#');
+                                location.replace(t.hash);
+                            }
+                        }
                     });
                 }
-            });
-        }
-
-        // Initial Load
-        renderContent('home');
-
-    </script>
-</body>
+                )();
+                var style, sheet, rule;
+                style = document.createElement('style');
+                style.appendChild(document.createTextNode(''));
+                document.head.appendChild(style);
+                sheet = style.sheet;
+                if (client.mobile) {
+                    (function() {
+                        if (client.flags.lsdUnits) {
+                            document.documentElement.style.setProperty('--viewport-height', '100svh');
+                            document.documentElement.style.setProperty('--background-height', '100lvh');
+                        } else {
+                            var f = function() {
+                                document.documentElement.style.setProperty('--viewport-height', window.innerHeight + 'px');
+                                document.documentElement.style.setProperty('--background-height', (window.innerHeight + 250) + 'px');
+                            };
+                            on('load', f);
+                            on('orientationchange', function() {
+                                setTimeout(function() {
+                                    (f)();
+                                }, 100);
+                            });
+                        }
+                    }
+                    )();
+                }
+                if (client.os == 'android') {
+                    (function() {
+                        sheet.insertRule('body::after { }', 0);
+                        rule = sheet.cssRules[0];
+                        var f = function() {
+                            rule.style.cssText = 'height: ' + (Math.max(screen.width, screen.height)) + 'px';
+                        };
+                        on('load', f);
+                        on('orientationchange', f);
+                        on('touchmove', f);
+                    }
+                    )();
+                    $body.classList.add('touch');
+                } else if (client.os == 'ios') {
+                    if (client.osVersion <= 11)
+                        (function() {
+                            sheet.insertRule('body::after { }', 0);
+                            rule = sheet.cssRules[0];
+                            rule.style.cssText = '-webkit-transform: scale(1.0)';
+                        }
+                        )();
+                    if (client.osVersion <= 11)
+                        (function() {
+                            sheet.insertRule('body.ios-focus-fix::before { }', 0);
+                            rule = sheet.cssRules[0];
+                            rule.style.cssText = 'height: calc(100% + 60px)';
+                            on('focus', function(event) {
+                                $body.classList.add('ios-focus-fix');
+                            }, true);
+                            on('blur', function(event) {
+                                $body.classList.remove('ios-focus-fix');
+                            }, true);
+                        }
+                        )();
+                    $body.classList.add('touch');
+                }
+                ready.run();
+            }
+            )();
+        </script>
+    </body>
 </html>
